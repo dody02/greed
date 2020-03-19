@@ -10,9 +10,11 @@ import com.alibaba.fastjson.JSONObject;
  */
 public class SynchronizedEvent {
 	
-	EventType eventType;
+	private EventType eventType;
 	
-	EventData eventData;
+	private EventData eventData;
+	
+	private long timestamp;
 	
 	public EventType getEventType() {
 		return eventType;
@@ -34,5 +36,12 @@ public class SynchronizedEvent {
 		return JSONObject.toJSONString(this);
 	}
 
+	public long getTimestamp() {
+		return timestamp;
+	}
+
+	public void setTimestamp(long timestamp) {
+		this.timestamp = timestamp;
+	}
 	
 }

@@ -77,7 +77,7 @@ public class ConnectorSyncEventDataParsing {
 				log.error(" !ERROR!  not tableMap event before; " + event.getHeader());
 			} else {
 				TableMap tablemap = JSONObject.parseObject(tableMate, TableMap.class);
-				processUpdateEvent(data, tablemap);
+				processUpdateEvent(event, tablemap);
 			}
 		} else if (data instanceof WriteRowsEventData) {
 			log.info("***********insert event:" + event.getHeader() + ";;;;" + data.toString());
@@ -86,7 +86,7 @@ public class ConnectorSyncEventDataParsing {
 				log.error(" !ERROR!  not tableMap event before; " + event.getHeader());
 			} else {
 				TableMap tablemap = JSONObject.parseObject(tableMate, TableMap.class);
-				processInsertEvent(data, tablemap);
+				processInsertEvent(event, tablemap);
 			}
 
 		} else if (data instanceof DeleteRowsEventData) {
@@ -96,7 +96,7 @@ public class ConnectorSyncEventDataParsing {
 				log.error(" !ERROR!  not tableMap event before; " + event.getHeader());
 			} else {
 				TableMap tablemap = JSONObject.parseObject(tableMate, TableMap.class);
-				processDelete(data, tablemap);
+				processDelete(event, tablemap);
 			}
 		}
 	}
@@ -107,14 +107,14 @@ public class ConnectorSyncEventDataParsing {
 	 * @param data
 	 * @param tablemap
 	 */
-	private void processDelete(com.github.shyiko.mysql.binlog.event.EventData data, TableMap tablemap) {
+	private void processDelete(Event event, TableMap tablemap) {
 		EventType eventType = EventType.DELETE;
 		EventData eventData = new EventData();
 		eventData.setSchema(tablemap.getDatabase());
 		eventData.setTable(tablemap.getTable());
 		JSONObject rowBefore = null;
 
-		List<Serializable[]> rowdata = ((DeleteRowsEventData) data).getRows();
+		List<Serializable[]> rowdata = ((DeleteRowsEventData) event.getData()).getRows();
 		String eventTable = tablemap.getTable();
 		for (int i = 0; i < rowdata.size(); i++) {
 			if (schemaInfo.get(eventTable) != null) {
@@ -134,6 +134,7 @@ public class ConnectorSyncEventDataParsing {
 			}
 			eventData.setRowData(rowBefore);
 			SynchronizedEvent syncevent = new SynchronizedEvent();
+			syncevent.setTimestamp(event.getHeader().getTimestamp());
 			syncevent.setEventData(eventData);
 			syncevent.setEventType(eventType);
 
@@ -148,13 +149,13 @@ public class ConnectorSyncEventDataParsing {
 	 * @param data
 	 * @param tablemap
 	 */
-	private void processInsertEvent(com.github.shyiko.mysql.binlog.event.EventData data, TableMap tablemap) {
+	private void processInsertEvent(Event event, TableMap tablemap) {
 		EventType eventType = EventType.INSERT;
 		EventData eventData = new EventData();
 		eventData.setSchema(tablemap.getDatabase());
 		eventData.setTable(tablemap.getTable());
 		JSONObject rowData = null;
-		List<Serializable[]> rowdata = ((WriteRowsEventData) data).getRows();
+		List<Serializable[]> rowdata = ((WriteRowsEventData) event.getData()).getRows();
 		String eventTable = tablemap.getTable();
 		for (int i = 0; i < rowdata.size(); i++) {
 			if (schemaInfo.get(eventTable) != null) {
@@ -174,6 +175,7 @@ public class ConnectorSyncEventDataParsing {
 			}
 			eventData.setRowData(rowData);
 			SynchronizedEvent syncevent = new SynchronizedEvent();
+			syncevent.setTimestamp(event.getHeader().getTimestamp());
 			syncevent.setEventData(eventData);
 			syncevent.setEventType(eventType);
 
@@ -187,7 +189,7 @@ public class ConnectorSyncEventDataParsing {
 	 * @param data
 	 * @param tablemap
 	 */
-	private void processUpdateEvent(com.github.shyiko.mysql.binlog.event.EventData data, TableMap tablemap) {
+	private void processUpdateEvent(Event event, TableMap tablemap) {
 		EventType eventType = EventType.UPDATE;
 		EventData eventData = new EventData();
 		eventData.setSchema(tablemap.getDatabase());
@@ -195,7 +197,7 @@ public class ConnectorSyncEventDataParsing {
 		JSONObject rowData = new JSONObject();
 		JSONObject rowBefore = new JSONObject();
 
-		List<Entry<Serializable[], Serializable[]>> rowdata = ((UpdateRowsEventData) data).getRows();
+		List<Entry<Serializable[], Serializable[]>> rowdata = ((UpdateRowsEventData) event.getData()).getRows();
 		String eventTable = tablemap.getTable();
 		for (int i = 0; i < rowdata.size(); i++) {
 			if (schemaInfo.get(eventTable) != null) {
@@ -220,6 +222,7 @@ public class ConnectorSyncEventDataParsing {
 			eventData.setRowData(rowData);
 			eventData.setBeforeRowData(rowBefore);
 			SynchronizedEvent syncevent = new SynchronizedEvent();
+			syncevent.setTimestamp(event.getHeader().getTimestamp());
 			syncevent.setEventData(eventData);
 			syncevent.setEventType(eventType);
 
