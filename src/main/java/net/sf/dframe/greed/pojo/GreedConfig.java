@@ -17,6 +17,8 @@ public class GreedConfig {
 	private String drivername;
 	
 	private String schema;
+	
+	private LogPosition logposition;
 
 	public String getHost() {
 		return host;
@@ -65,7 +67,14 @@ public class GreedConfig {
 	public void setSchema(String schema) {
 		this.schema = schema;
 	}
-	
+
+	public LogPosition getLogposition() {
+		return logposition;
+	}
+
+	public void setLogposition(LogPosition logposition) {
+		this.logposition = logposition;
+	}
 	
 	
 }

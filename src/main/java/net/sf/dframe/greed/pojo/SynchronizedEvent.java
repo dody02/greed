@@ -13,7 +13,7 @@ public class SynchronizedEvent {
 	EventType eventType;
 	
 	EventData eventData;
-
+	
 	public EventType getEventType() {
 		return eventType;
 	}
@@ -33,5 +33,6 @@ public class SynchronizedEvent {
 	public String toString() {
 		return JSONObject.toJSONString(this);
 	}
+
 	
 }

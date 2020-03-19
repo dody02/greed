@@ -138,6 +138,7 @@ public class ConnectorSyncEventDataParsing {
 			syncevent.setEventType(eventType);
 
 			listener.onDelete(syncevent);
+			 
 		}
 	}
 

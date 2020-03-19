@@ -68,10 +68,14 @@ public class ConnectorSyncServer implements ISyncService {
 	public void start() throws Exception {
 		//create a clinet 
 		client = new BinaryLogClient(config.getHost(), config.getPort(), config.getSchema(), config.getUser(), config.getPassword());
-		//get columns info 
-//		schemaInfo = initSchema();
 		//check log
-		checkLogPosition();
+		if (config.getLogposition() != null && config.getLogposition().getLogfile() != null ) {
+			this.setPosition(config.getLogposition());
+			log.info("set position in config file");
+		} else {
+			checkLogPosition();
+			log.info("set position in cluster cache");
+		}
 		//init listener 
 		parsing = new ConnectorSyncEventDataParsing(this, listener);
 		
@@ -90,10 +94,14 @@ public class ConnectorSyncServer implements ISyncService {
 					log.info("current node is master node, do process");
 					
 					//to do event data process
-					parsing.parsingEvent(event);
+					try {
+						parsing.parsingEvent(event);
+						//record the position
+						updateLogPosition();
+					} catch (Exception e) {
+						log.error("Parsing Event data Exception",e);
+					}
 					
-					//record the position
-					updateLogPosition();
 
 				} else {
 					log.info("current node is not master node, do nothing! master node is :"+cluster.getActive());
@@ -203,6 +211,23 @@ public class ConnectorSyncServer implements ISyncService {
 			lp = JSONObject.parseObject(strLp, LogPosition.class);
 		}
 		return lp;
+	}
+	/**
+	 * 设置位置
+	 * @param position
+	 */
+	public void setPosition(LogPosition position) {
+		client.setBinlogFilename(position.getLogfile());
+		client.setBinlogPosition(position.getPosition());
+		cluster.getArributesMap().put(POSITION, JSONObject.toJSONString(position));
+		if (client.isConnected()) {
+			try {
+				client.disconnect();
+				client.connect();
+			} catch (IOException e) {
+				log.error("reset position and restart client connector exception",e);
+			}
+		}
 	}
 	
 	/**
