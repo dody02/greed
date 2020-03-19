@@ -1,0 +1,107 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>net.sf.dframe</groupId>
+	<artifactId>greed</artifactId>
+	<version>0.1-SNAPSHOT</version>
+	<packaging>jar</packaging>
+
+	<name>greed</name>
+	<url>http://maven.apache.org</url>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<maven.compiler.target>1.8</maven.compiler.target>
+		<maven.compiler.source>1.8</maven.compiler.source>
+		<java.version>1.8</java.version>
+		<fastjson.version>1.2.66</fastjson.version>
+		<slf4j-api.version>1.7.7</slf4j-api.version>
+		<dframe.version>1.0</dframe.version>
+		<logback-core.version>1.2.3</logback-core.version>
+	</properties>
+
+	<dependencies>
+
+		<dependency>
+			<groupId>com.alibaba</groupId>
+			<artifactId>fastjson</artifactId>
+			<version>${fastjson.version}</version>
+		</dependency>
+		<!-- logback start -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>${slf4j-api.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-core</artifactId>
+			<version>${logback-core.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+			<version>${logback-core.version}</version>
+		</dependency>
+		<!-- logback end -->
+
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+			<version>6.0.6</version>
+			<scope>test</scope>
+		</dependency>
+ 
+		<dependency>
+			<groupId>com.github.shyiko</groupId>
+			<artifactId>mysql-binlog-connector-java</artifactId>
+			<version>0.18.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>net.dframe.cluster</groupId>
+			<artifactId>dframe.cluster</artifactId>
+			<version>${dframe.version}</version>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/lib/net.sf.dframe.cluster-0.2-SNAPSHOT.jar</systemPath>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>3.8.1</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<configuration>
+					<descriptorRefs>
+						<descriptorRef>jar-with-dependencies</descriptorRef>
+					</descriptorRefs>
+					<archive>
+						<manifest>
+							<mainClass></mainClass>
+						</manifest>
+					</archive>
+				</configuration>
+				<executions>
+					<execution>
+						<id>make-assembly</id>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>
