@@ -5,7 +5,7 @@
 
 	<groupId>net.sf.dframe</groupId>
 	<artifactId>greed</artifactId>
-	<version>0.1-SNAPSHOT</version>
+	<version>0.2</version>
 	<packaging>jar</packaging>
 
 	<name>greed</name>
@@ -67,7 +67,7 @@
 			<artifactId>dframe.cluster</artifactId>
 			<version>${dframe.version}</version>
 			<scope>system</scope>
-			<systemPath>${project.basedir}/lib/net.sf.dframe.cluster-0.2-SNAPSHOT.jar</systemPath>
+			<systemPath>${project.basedir}/lib/mayi-0.3-jar-with-dependencies.jar</systemPath>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
@@ -79,6 +79,21 @@
 
 	<build>
 		<plugins>
+		<!-- 打包代码 -->
+		<plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>jar-no-fork</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
 				<configuration>
