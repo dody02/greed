@@ -18,7 +18,7 @@ private static Logger log = LoggerFactory.getLogger(SynchronizedListenerAdapter.
 	
 	@Override
 	public void onData(SynchronizedEvent event) {
-		log.info("event:"+event);
+		log.debug("event:"+event);
 		if ( event.getEventType() == EventType.DELETE) {
 			onDelete(event);
 		}

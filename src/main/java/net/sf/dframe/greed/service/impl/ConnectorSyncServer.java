@@ -88,10 +88,10 @@ public class ConnectorSyncServer implements ISyncService {
 
 			@Override
 			public void onEvent(Event event) {
-				log.info(" receiver event: " + event.getHeader() + "," + event.getData());
+				log.debug(" receiver event: " + event.getHeader() + "," + event.getData());
 
 				if (cluster.isMeActive()) {
-					log.info("current node is master node, do process");
+					log.debug("current node is master node, do process");
 					
 					//to do event data process
 					try {
@@ -129,13 +129,13 @@ public class ConnectorSyncServer implements ISyncService {
 	 */
 	private void checkLogPosition() {
 		// 处理未处理数据
-		log.info("check log postion");
+		log.debug("check log postion");
 		try {
 			LogPosition lp = getPosition();
 			if (lp != null) {
 				client.setBinlogFilename(lp.getLogfile());
 				client.setBinlogPosition(lp.getPosition());
-				log.info("set filename to :" + lp.getLogfile() + " and position to :" + lp.getPosition());
+				log.debug("set filename to :" + lp.getLogfile() + " and position to :" + lp.getPosition());
 			}
 		} catch (Exception e) {
 			log.error("get log position exception", e);

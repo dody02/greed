@@ -71,7 +71,7 @@ public class ConnectorSyncEventDataParsing {
 		// 只处理添加删除更新三种操作
 
 		if (data instanceof UpdateRowsEventData) {
-			log.info("*******update event:" + event.getHeader() + ";;;;" + data.toString());
+			log.debug("*******update event:" + event.getHeader() + ";;;;" + data.toString());
 			String tableMate = tableMap.get(TABLE_MAP);
 			if (tableMate == null || tableMate.isEmpty()) {
 				log.error(" !ERROR!  not tableMap event before; " + event.getHeader());
@@ -80,7 +80,7 @@ public class ConnectorSyncEventDataParsing {
 				processUpdateEvent(event, tablemap);
 			}
 		} else if (data instanceof WriteRowsEventData) {
-			log.info("***********insert event:" + event.getHeader() + ";;;;" + data.toString());
+			log.debug("***********insert event:" + event.getHeader() + ";;;;" + data.toString());
 			String tableMate = tableMap.get(TABLE_MAP);
 			if (tableMate == null || tableMate.isEmpty()) {
 				log.error(" !ERROR!  not tableMap event before; " + event.getHeader());
@@ -90,7 +90,7 @@ public class ConnectorSyncEventDataParsing {
 			}
 
 		} else if (data instanceof DeleteRowsEventData) {
-			log.info("*********delete event:" + event.getHeader() + ";;;;" + data.toString());
+			log.debug("*********delete event:" + event.getHeader() + ";;;;" + data.toString());
 			String tableMate = tableMap.get(TABLE_MAP);
 			if (tableMate == null || tableMate.isEmpty()) {
 				log.error(" !ERROR!  not tableMap event before; " + event.getHeader());
