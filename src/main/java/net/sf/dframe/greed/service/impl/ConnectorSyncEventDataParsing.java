@@ -65,6 +65,11 @@ public class ConnectorSyncEventDataParsing {
 			TableMapEventData tableData = event.getData();
 			String db = tableData.getDatabase();
 			String table = tableData.getTable();
+			//not the aim schema,in mysql schema == database
+			if (server.getConfig().getSchema().equals(db)) {
+				log.debug("not aim schema,do nothing!");
+				return;
+			}
 			tableMap.put(TABLE_MAP, JSONObject.toJSONString(new TableMap(db, table)));
 		}
 

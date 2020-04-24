@@ -5,7 +5,7 @@
 
 	<groupId>net.sf.dframe</groupId>
 	<artifactId>greed</artifactId>
-	<version>0.2</version>
+	<version>0.3</version>
 	<packaging>jar</packaging>
 
 	<name>greed</name>
@@ -48,11 +48,18 @@
 			<version>${logback-core.version}</version>
 		</dependency>
 		<!-- logback end -->
-
+<!-- 
 		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
 			<version>6.0.6</version>
+			<scope>test</scope>
+		</dependency>
+	 -->	
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+			<version>5.1.44</version>
 			<scope>test</scope>
 		</dependency>
  
