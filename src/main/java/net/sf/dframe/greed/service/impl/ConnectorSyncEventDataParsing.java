@@ -65,11 +65,6 @@ public class ConnectorSyncEventDataParsing {
 			TableMapEventData tableData = event.getData();
 			String db = tableData.getDatabase();
 			String table = tableData.getTable();
-			//not the aim schema,in mysql schema == database
-			if (server.getConfig().getSchema().equals(db)) {
-				log.debug("not aim schema,do nothing!");
-				return;
-			}
 			tableMap.put(TABLE_MAP, JSONObject.toJSONString(new TableMap(db, table)));
 		}
 
@@ -82,7 +77,13 @@ public class ConnectorSyncEventDataParsing {
 				log.error(" !ERROR!  not tableMap event before; " + event.getHeader());
 			} else {
 				TableMap tablemap = JSONObject.parseObject(tableMate, TableMap.class);
-				processUpdateEvent(event, tablemap);
+				//not the aim schema,in mysql schema == database
+				if (!server.getConfig().getSchema().equals(tablemap.getDatabase())) {
+					log.debug("not aim schema,do nothing!");
+					return;
+				} else {
+					processUpdateEvent(event, tablemap);
+				}
 			}
 		} else if (data instanceof WriteRowsEventData) {
 			log.debug("***********insert event:" + event.getHeader() + ";;;;" + data.toString());
@@ -91,7 +92,13 @@ public class ConnectorSyncEventDataParsing {
 				log.error(" !ERROR!  not tableMap event before; " + event.getHeader());
 			} else {
 				TableMap tablemap = JSONObject.parseObject(tableMate, TableMap.class);
-				processInsertEvent(event, tablemap);
+				//not the aim schema,in mysql schema == database
+				if (!server.getConfig().getSchema().equals(tablemap.getDatabase())) {
+					log.debug("not aim schema,do nothing!");
+					return;
+				} else {
+					processInsertEvent(event, tablemap);
+				}
 			}
 
 		} else if (data instanceof DeleteRowsEventData) {
@@ -101,7 +108,13 @@ public class ConnectorSyncEventDataParsing {
 				log.error(" !ERROR!  not tableMap event before; " + event.getHeader());
 			} else {
 				TableMap tablemap = JSONObject.parseObject(tableMate, TableMap.class);
-				processDelete(event, tablemap);
+				//not the aim schema,in mysql schema == database
+				if (!server.getConfig().getSchema().equals(tablemap.getDatabase())) {
+					log.debug("not aim schema,do nothing!");
+					return;
+				} else {
+					processDelete(event, tablemap);
+				}
 			}
 		}
 	}
