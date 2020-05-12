@@ -19,6 +19,8 @@ public class GreedConfig {
 	private String schema;
 	
 	private LogPosition logposition;
+	
+	private long conntimeout;
 
 	public String getHost() {
 		return host;
@@ -74,6 +76,14 @@ public class GreedConfig {
 
 	public void setLogposition(LogPosition logposition) {
 		this.logposition = logposition;
+	}
+
+	public long getConntimeout() {
+		return conntimeout;
+	}
+
+	public void setConntimeout(long conntimeout) {
+		this.conntimeout = conntimeout;
 	}
 	
 	

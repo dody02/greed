@@ -76,4 +76,12 @@ public class ClientConnectionEventListener implements LifecycleListener{
 	public long getTimeout() {
 		return timeout;
 	}
+	
+	public IConnectionListener getListener() {
+		return listener;
+	}
+	public void setListener(IConnectionListener listener) {
+		this.listener = listener;
+	}
+	
 }
