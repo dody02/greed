@@ -14,12 +14,14 @@ import org.slf4j.LoggerFactory;
 import com.alibaba.fastjson.JSONObject;
 import com.github.shyiko.mysql.binlog.BinaryLogClient;
 import com.github.shyiko.mysql.binlog.BinaryLogClient.EventListener;
+import com.github.shyiko.mysql.binlog.BinaryLogClient.LifecycleListener;
 import com.github.shyiko.mysql.binlog.event.Event;
 import com.github.shyiko.mysql.binlog.event.deserialization.EventDeserializer;
 
 import net.sf.dframe.cluster.hazelcast.HazelcastMasterSlaveCluster;
 import net.sf.dframe.greed.pojo.GreedConfig;
 import net.sf.dframe.greed.pojo.LogPosition;
+import net.sf.dframe.greed.service.ClientConnectionEventListener;
 import net.sf.dframe.greed.service.ISyncService;
 import net.sf.dframe.greed.service.SynchronizedListenerAdapter;
 
@@ -55,11 +57,16 @@ public class ConnectorSyncServer implements ISyncService {
 	
 	private SynchronizedListenerAdapter listener;
 	
+	
+	private ClientConnectionEventListener connlistener;
+	
 	public ConnectorSyncServer(GreedConfig config) {
 		this.config = config;
 	}
 	
-	public ConnectorSyncServer() {}
+	public ConnectorSyncServer() {
+		this.connlistener = new ClientConnectionEventListener(this);
+	}
 	
 	/**
 	 * Start a synchronized data server
@@ -109,7 +116,10 @@ public class ConnectorSyncServer implements ISyncService {
 			}
 			
 		});
+		
+		client.registerLifecycleListener(connlistener);
 		client.connect();
+		
 	}
 	
 	
@@ -236,6 +246,7 @@ public class ConnectorSyncServer implements ISyncService {
 	@Override
 	public void stop() {
 		try {
+			client.unregisterLifecycleListener(connlistener);
 			client.disconnect();
 		} catch (IOException e) {
 			log.error("stop server exception",e);
