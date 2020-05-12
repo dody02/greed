@@ -18,6 +18,7 @@ import com.github.shyiko.mysql.binlog.event.Event;
 import com.github.shyiko.mysql.binlog.event.deserialization.EventDeserializer;
 
 import net.sf.dframe.cluster.hazelcast.HazelcastMasterSlaveCluster;
+import net.sf.dframe.greed.config.LoadJsonConfig;
 import net.sf.dframe.greed.pojo.GreedConfig;
 import net.sf.dframe.greed.pojo.LogPosition;
 import net.sf.dframe.greed.service.ClientConnectionEventListener;
@@ -57,12 +58,17 @@ public class ConnectorSyncServer implements ISyncService {
 	
 	private SynchronizedListenerAdapter listener;
 	
+	private String url = "greed.json";
 	
 	private ClientConnectionEventListener connlistener;
 	
 	
-	public ConnectorSyncServer(GreedConfig config) {
-		this.config = config;
+	public ConnectorSyncServer(GreedConfig config) throws Exception {
+		if(config == null) {
+			config = LoadJsonConfig.readConfig(url);
+		} else {
+			this.config = config;
+		}
 		this.connlistener = new ClientConnectionEventListener(this);
 	}
 	
