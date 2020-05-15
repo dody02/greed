@@ -25,9 +25,16 @@ public class ClientConnectionEventListener implements LifecycleListener{
 	
 	private ConnectorSyncServer server ;
 	
+	private boolean retrylogerr = false;
+	
+	private boolean autoConnect = false;
+	
+	
 	
 	public ClientConnectionEventListener (ConnectorSyncServer server) {
 		this.server = server;
+		retrylogerr= server.getConfig().isRetrylogerr();
+		autoConnect = server.getConfig().isAutoreconn();
 	}
 	
 	
@@ -41,6 +48,25 @@ public class ClientConnectionEventListener implements LifecycleListener{
 	@Override
 	public void onCommunicationFailure(BinaryLogClient client, Exception ex) {
 		log.error("Communication Faulure:",ex);
+		
+		if (ex instanceof  com.github.shyiko.mysql.binlog.network.ServerException) {
+			if (ex.getMessage().contains("Could not find first log file name in binary log index file")) {
+				if (retrylogerr ) { // reset and try again
+					log.info("binlog file position not synchronized, try to reset posion and reconnected");
+					try {
+						server.setPosition(null);
+					} catch (IOException e) {
+						log.error("re connection exception ",e);
+					}
+				} 
+			}
+				
+		}
+		
+		if (listener != null)
+			listener.onError(server,ex);
+	
+		
 	}
 
 	@Override
@@ -55,17 +81,21 @@ public class ClientConnectionEventListener implements LifecycleListener{
 
 	@Override
 	public void onDisconnect(BinaryLogClient client) {
-		if (listener == null) {
+		
+		if (autoConnect) {
+			log.info("auto Connection processing ……");
 			try {
-				client.connect(timeout);
+				client.connect(server.getConfig().getConntimeout() >0 ? server.getConfig().getConntimeout():timeout);
 			} catch (IOException e) {
 				log.error("retry to connected mysql db exception",e);
 			} catch (TimeoutException e) {
 				log.error("retry to connected mysql db exception",e);
 			}
-		} else {
-			listener.onDisConnected(server);
 		}
+		
+		if (listener != null) {
+			listener.onDisConnected(server);
+		} 
 		
 	}
 

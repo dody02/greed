@@ -243,18 +243,25 @@ public class ConnectorSyncServer implements ISyncService {
 	/**
 	 * 设置位置
 	 * @param position
+	 * @throws IOException 
 	 */
-	public void setPosition(LogPosition position) {
-		client.setBinlogFilename(position.getLogfile());
-		client.setBinlogPosition(position.getPosition());
-		cluster.getArributesMap().put(POSITION, JSONObject.toJSONString(position));
+	public void setPosition(LogPosition position) throws IOException {
+		if (position == null) {
+			client.setBinlogFilename(url);
+			client.setBinlogPosition(0);
+			cluster.getArributesMap().remove(POSITION);
+		}else {
+			client.setBinlogFilename(position.getLogfile());
+			client.setBinlogPosition(position.getPosition());
+			cluster.getArributesMap().put(POSITION, JSONObject.toJSONString(position));
+			
+		}
 		if (client.isConnected()) {
-			try {
 				client.disconnect();
-				client.connect();
-			} catch (IOException e) {
-				log.error("reset position and restart client connector exception",e);
-			}
+				if (!config.isAutoreconn()) {
+					client.connect();
+				}
+			
 		}
 	}
 	

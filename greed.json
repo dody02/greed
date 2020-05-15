@@ -16,4 +16,17 @@
 	
 	"?schema":"监听的库",
 	"schema":"testbinlog"
+	
+	
+	"?retrylogerr":"重试日志位置信息错误异常，默认为true.如果是false，不重试，否则重试。重试会重置为同步服务器的日志位置信息，再重试。",
+	"retrylogerr":true,
+	
+	"?autoreconn":"断开时自动重连，默认为true",
+	"autoreconn":true,
+	
+	"?logposition":"log position,默认以服务器上日志位置为启始",
+	"logposition": {
+		"logfile":"mysql-bin.000006",
+		"position":14167
+	}
 }

@@ -6,21 +6,27 @@ package net.sf.dframe.greed.pojo;
  */
 public class GreedConfig {
 	
+	//mysql host
 	private String host;
-	
+	//mysql port 
 	private int port ;
-	
+	//mysql user
 	private String user;
-	
+	//mysql password
 	private String password;
-	
+	//driver name 
 	private String drivername;
-	
+	//schema
 	private String schema;
-	
+	//log position info
 	private LogPosition logposition;
-	
+	// connect time out
 	private long conntimeout;
+	// when log position error retry ,default true
+	private boolean retrylogerr = true;
+	// reconnect when connect cut , default true
+	private boolean autoreconn = true;
+	
 
 	public String getHost() {
 		return host;
@@ -85,6 +91,23 @@ public class GreedConfig {
 	public void setConntimeout(long conntimeout) {
 		this.conntimeout = conntimeout;
 	}
+
+	public boolean isRetrylogerr() {
+		return retrylogerr;
+	}
+
+	public void setRetrylogerr(boolean retrylogerr) {
+		this.retrylogerr = retrylogerr;
+	}
+
+	public boolean isAutoreconn() {
+		return autoreconn;
+	}
+
+	public void setAutoreconn(boolean autoreconn) {
+		this.autoreconn = autoreconn;
+	}
+	
 	
 	
 }
