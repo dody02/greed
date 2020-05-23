@@ -29,6 +29,10 @@ public class ClientConnectionEventListener implements LifecycleListener{
 	
 	private boolean autoConnect = false;
 	
+	private int maxRetryTime = 3;
+	
+	private int currentRetryTime = 0 ;//
+	
 	
 	
 	public ClientConnectionEventListener (ConnectorSyncServer server) {
@@ -85,7 +89,14 @@ public class ClientConnectionEventListener implements LifecycleListener{
 		if (autoConnect) {
 			log.info("auto Connection processing ……");
 			try {
-				client.connect(server.getConfig().getConntimeout() >0 ? server.getConfig().getConntimeout():timeout);
+				if (this.currentRetryTime <= this.maxRetryTime) {
+					client.connect(server.getConfig().getConntimeout() >0 ? server.getConfig().getConntimeout():timeout);
+					retry();//叠加
+				} else {
+					server.setPosition(null);
+					this.currentRetryTime = 0;
+					client.connect(server.getConfig().getConntimeout() >0 ? server.getConfig().getConntimeout():timeout);
+				}
 			} catch (IOException e) {
 				log.error("retry to connected mysql db exception",e);
 			} catch (TimeoutException e) {
@@ -100,6 +111,10 @@ public class ClientConnectionEventListener implements LifecycleListener{
 	}
 
 	
+	private synchronized void retry () {
+		this.currentRetryTime++;
+	}
+	
 	public void setTimeout(long timeout) {
 		this.timeout = timeout;
 	}
@@ -113,5 +128,17 @@ public class ClientConnectionEventListener implements LifecycleListener{
 	public void setListener(IConnectionListener listener) {
 		this.listener = listener;
 	}
+
+
+	public int getMaxRetryTime() {
+		return maxRetryTime;
+	}
+
+
+	public void setMaxRetryTime(int maxRetryTime) {
+		this.maxRetryTime = maxRetryTime;
+	}
+	
+	
 	
 }
