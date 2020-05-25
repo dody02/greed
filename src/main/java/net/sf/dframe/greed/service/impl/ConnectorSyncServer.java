@@ -131,6 +131,8 @@ public class ConnectorSyncServer implements ISyncService {
 		});
 		
 		client.registerLifecycleListener(connlistener);
+		
+		client.setKeepAlive(false);//reconnected by manual
 		if (config.getConntimeout() >0 ) {
 			log.debug("try to connect,time out setting :"+config.getConntimeout());
 			client.connect(config.getConntimeout());
