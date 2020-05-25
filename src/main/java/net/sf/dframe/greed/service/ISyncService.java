@@ -12,4 +12,7 @@ public interface ISyncService {
 	public void stop();
 	
 	
+	public boolean isStarted();
+	
+	
 }

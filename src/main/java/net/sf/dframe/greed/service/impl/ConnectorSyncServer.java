@@ -247,7 +247,7 @@ public class ConnectorSyncServer implements ISyncService {
 	 */
 	public void setPosition(LogPosition position) throws IOException {
 		if (position == null) {
-			client.setBinlogFilename(url);
+			client.setBinlogFilename(null);
 			client.setBinlogPosition(0);
 			cluster.getArributesMap().remove(POSITION);
 		}else {
@@ -271,10 +271,14 @@ public class ConnectorSyncServer implements ISyncService {
 	@Override
 	public void stop() {
 		try {
+			
 			client.unregisterLifecycleListener(connlistener);
-			client.disconnect();
+			if (client.isConnected())
+				client.disconnect();
 		} catch (IOException e) {
 			log.error("stop server exception",e);
+		} finally {
+			client = null;
 		}
 	}
 
@@ -295,6 +299,16 @@ public class ConnectorSyncServer implements ISyncService {
 	}
 	public GreedConfig getConfig() {
 		return config;
+	}
+
+
+	@Override
+	public boolean isStarted() {
+		if (this.client != null) {
+			if (client.isConnected())
+				return true;
+		}
+		return false;
 	}
 	
 }
