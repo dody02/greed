@@ -16,5 +16,6 @@
 	"conntimeout":30000,
 	"retrylogerr":true,
 	"autoreconn": true,
-	"reconntimer": 5000
+	"reconntimer": 5000,
+	"serverid": 10000
 }

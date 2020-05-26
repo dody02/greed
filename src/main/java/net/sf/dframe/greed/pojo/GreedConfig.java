@@ -29,6 +29,8 @@ public class GreedConfig {
 	// auto reconnect timer
 	private long reconntimer = 5000;
 	
+	private long serverid = 0L;
+	
 	
 	public String getHost() {
 		return host;
@@ -115,6 +117,14 @@ public class GreedConfig {
 	}
 	public void setReconntimer(long reconntimer) {
 		this.reconntimer = reconntimer;
+	}
+
+	public long getServerid() {
+		return serverid;
+	}
+
+	public void setServerid(long serverid) {
+		this.serverid = serverid;
 	}
 	
 }

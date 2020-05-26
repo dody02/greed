@@ -88,6 +88,11 @@ public class ConnectorSyncServer implements ISyncService {
 	public void start() throws Exception {
 		//create a clinet 
 		client = new BinaryLogClient(config.getHost(), config.getPort(), config.getSchema(), config.getUser(), config.getPassword());
+		
+		//set id
+		if (config.getServerid() != 0L) {
+			client.setServerId(config.getServerid());
+		}
 		//check log
 		if (config.getLogposition() != null && config.getLogposition().getLogfile() != null ) {
 			this.setPosition(config.getLogposition());
