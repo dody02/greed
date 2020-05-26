@@ -1,32 +1,20 @@
 {
-	"?host": "数据库服务器",
-	"host": "localhost",
+	"host": "rm-wz9zc1g45z7p2w9d6.mysql.rds.aliyuncs.com",
+
+	"port":3306,
+
+	"user":"zib_youchuang",
+
+	"password": "PvRqdDA6IAy0IQ5teYQq",
+
+	"drivername":"com.mysql.jdbc.Driver",
+
+	"?schema":"zib_youchuang_test",
+	"schema":"zib_yc_shop",
 	
-	"?port":"数据库端口",
-	"port":3307,
-	
-	"?user":"数据库用户名",
-	"user":"root",
-	
-	"?password":"数据库密码",
-	"password": "root",
-	
-	"?drivername":"数据库驱动类名称",
-	"drivername":"com.mysql.cj.jdbc.Driver",
-	
-	"?schema":"监听的库",
-	"schema":"testbinlog"
-	
-	
-	"?retrylogerr":"重试日志位置信息错误异常，默认为true.如果是false，不重试，否则重试。重试会重置为同步服务器的日志位置信息，再重试。",
+	"?conntimeout":30000,
+	"conntimeout":30000,
 	"retrylogerr":true,
-	
-	"?autoreconn":"断开时自动重连，默认为true",
-	"autoreconn":true,
-	
-	"?logposition":"log position,默认以服务器上日志位置为启始",
-	"logposition": {
-		"logfile":"mysql-bin.000006",
-		"position":14167
-	}
+	"autoreconn": true,
+	"reconntimer": 5000
 }

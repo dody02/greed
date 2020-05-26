@@ -132,7 +132,12 @@ public class ConnectorSyncServer implements ISyncService {
 		
 		client.registerLifecycleListener(connlistener);
 		
-		client.setKeepAlive(false);//reconnected by manual
+		
+		client.setKeepAlive(config.isAutoreconn());//reconnected by manual
+		if (config.isAutoreconn())
+			client.setKeepAliveInterval(config.getReconntimer());
+		
+		
 		if (config.getConntimeout() >0 ) {
 			log.debug("try to connect,time out setting :"+config.getConntimeout());
 			client.connect(config.getConntimeout());
@@ -277,6 +282,20 @@ public class ConnectorSyncServer implements ISyncService {
 			client.unregisterLifecycleListener(connlistener);
 			if (client.isConnected())
 				client.disconnect();
+			if (config.isAutoreconn()) {  //自动连接时，需要关线程
+				Thread ct = findThread(client.getConnectionId());
+				if (ct != null) {
+					try {
+						ct.interrupt();
+					}catch (Exception e ) {
+						log.error("stop reconnetiong Exception");
+					}
+				}else {
+					log.info("client Thread is null!");
+				}
+			}
+			
+			
 		} catch (IOException e) {
 			log.error("stop server exception",e);
 		} finally {
@@ -303,6 +322,25 @@ public class ConnectorSyncServer implements ISyncService {
 		return config;
 	}
 
+	/**
+	 * Find thread 
+	 * @param threadId
+	 * @return
+	 */
+	private Thread findThread(long threadId) {
+	    ThreadGroup group = Thread.currentThread().getThreadGroup();
+	    while(group != null) {
+	        Thread[] threads = new Thread[(int)(group.activeCount() * 1.2)];
+	        int count = group.enumerate(threads, true);
+	        for(int i = 0; i < count; i++) {
+	            if(threadId == threads[i].getId()) {
+	                return threads[i];
+	            }
+	        }
+	        group = group.getParent();
+	    }
+	    return null;
+	}
 
 	@Override
 	public boolean isStarted() {

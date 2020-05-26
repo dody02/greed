@@ -19,7 +19,7 @@ public class ClientConnectionEventListener implements LifecycleListener{
 
 	private static Logger log = LoggerFactory.getLogger(ConnectorSyncServer.class);
 	
-	private long timeout = 20000; 
+	private long timeout = 60000; 
 	
 	private IConnectionListener listener = null;
 	
@@ -27,18 +27,15 @@ public class ClientConnectionEventListener implements LifecycleListener{
 	
 	private boolean retrylogerr = false;
 	
-	private boolean autoConnect = false;
 	
 	private int maxRetryTime = 3;
 	
-	private int currentRetryTime = 0 ;//
 	
 	
 	
 	public ClientConnectionEventListener (ConnectorSyncServer server) {
 		this.server = server;
 		retrylogerr= server.getConfig().isRetrylogerr();
-		autoConnect = server.getConfig().isAutoreconn();
 	}
 	
 	
@@ -58,7 +55,7 @@ public class ClientConnectionEventListener implements LifecycleListener{
 				if (retrylogerr ) { // reset and try again
 					log.info("binlog file position not synchronized, try to reset posion and reconnected");
 					try {
-						server.setPosition(null);
+						server.setPosition(new LogPosition());
 					} catch (IOException e) {
 						log.error("re connection exception ",e);
 					}
@@ -77,9 +74,9 @@ public class ClientConnectionEventListener implements LifecycleListener{
 	@Override
 	public void onEventDeserializationFailure(BinaryLogClient client, Exception ex) {
 		log.warn("Communication Issue , try to disconnected and reConnect",ex);
+		
 		try {
-//			client.disconnect();
-			server.stop();
+			client.disconnect();
 		} catch (Exception e) {
 			log.error("client disconnected error",e);
 		}
@@ -88,54 +85,41 @@ public class ClientConnectionEventListener implements LifecycleListener{
 	@Override
 	public void onDisconnect(BinaryLogClient client) {
 		
-		if (autoConnect) {
-			log.info("auto Connection processing ……");
-			//1. stop server 
-			server.stop();
-			log.info("stop synchronization server ……");
-			//2. restart server
-			if (this.currentRetryTime <= this.maxRetryTime) {
-				log.info("try to restart synchronizetion data from last position log");
-//					client.connect(server.getConfig().getConntimeout() >0 ? server.getConfig().getConntimeout():timeout);
-				new Thread () {
-					@Override
-					public void run () {
-						try {
-							server.start();
-						} catch (Exception e) {
-							log.error("retry to RESTART SERVER exception",e);
-						}							
-					}
-				}.start();
-				log.info("append retry time !");
-				retry();//叠加
-				try {
-					Thread.sleep(timeout);
-					if (server.isStarted()) {
-						log.info("checked restart server result : server is stared!");
-						this.currentRetryTime = 0;
-					} else {
-						log.info("checked restart server result : server is not started yet!");
-					}
-				} catch (InterruptedException e) {
-				}
-			} else {
-				server.getConfig().setLogposition(new LogPosition());
-				new Thread () {
-					@Override
-					public void run () {
-						try {
-							server.start();
-						} catch (Exception e) {
-							log.error("retry to RESET LOGPOSITION & RESTART SERVER exception",e);
-						}							
-					}
-				}.start();
-//					client.connect(server.getConfig().getConntimeout() >0 ? server.getConfig().getConntimeout():timeout);
-			} 
-		} else {// END Auto reconnected
-			log.info("NO AUTO RECONNECTE CONFIG,DO NOTHING");
-		} 
+//		if (autoConnect) {
+//			log.info("auto Connection processing ……");
+//			//1. stop server 
+//			server.stop();
+//			log.info("stop synchronization server ……");
+//			//2. restart server
+//			RestartThread rt = new RestartThread();
+//			rt.start();
+//			log.info("append retry time !");
+//				
+//			try {
+//				Thread.sleep(timeout);
+//				while (!server.isStarted() && (this.currentRetryTime <= this.maxRetryTime)) {
+//					log.info("checked restart server result : server is not started yet!");
+//					retry();//叠加
+//					Thread.sleep(timeout);
+//				}
+//					
+//			} catch (InterruptedException e) {
+//			}
+//			if (!server.isStarted()) {
+//				try {
+//					server.stop();
+//					rt.interrupt();
+//				} catch(Exception e) {
+//					log.warn("stop retry connected server exception ",e);
+//				}
+//				server.getConfig().setLogposition(new LogPosition());
+//				RestartThread rt2 = new RestartThread();
+//				rt2.start();
+//			}
+//			
+//		} else {// END Auto reconnected
+//			log.info("NO AUTO RECONNECTE CONFIG,DO NOTHING");
+//		} 
 		
 		if (listener != null) {
 			listener.onDisConnected(server);
@@ -143,10 +127,6 @@ public class ClientConnectionEventListener implements LifecycleListener{
 		
 	}
 
-	
-	private synchronized void retry () {
-		this.currentRetryTime++;
-	}
 	
 	public void setTimeout(long timeout) {
 		this.timeout = timeout;
@@ -166,12 +146,35 @@ public class ClientConnectionEventListener implements LifecycleListener{
 	public int getMaxRetryTime() {
 		return maxRetryTime;
 	}
-
+	
+	
 
 	public void setMaxRetryTime(int maxRetryTime) {
 		this.maxRetryTime = maxRetryTime;
 	}
 	
 	
+	
+//	class RestartThread extends Thread {
+//		public void run () {
+//			try {
+//				server.start();
+//			} catch (Exception e) {
+//				log.error("RESTART SERVER ERROR ",e);
+//			}
+//			while (! server.isStarted()) {
+//				try {
+//					server.stop();
+//					Thread.sleep(timeout);
+//					server.start();
+//					} catch (Exception e1) {
+//						log.error("server restart ERROR^  ",e1);
+//					}
+//			}
+//
+//		}
+//	}
+
+
 	
 }

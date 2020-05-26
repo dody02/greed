@@ -26,8 +26,10 @@ public class GreedConfig {
 	private boolean retrylogerr = true;
 	// reconnect when connect cut , default true
 	private boolean autoreconn = true;
+	// auto reconnect timer
+	private long reconntimer = 5000;
 	
-
+	
 	public String getHost() {
 		return host;
 	}
@@ -108,6 +110,11 @@ public class GreedConfig {
 		this.autoreconn = autoreconn;
 	}
 	
-	
+	public long getReconntimer() {
+		return reconntimer;
+	}
+	public void setReconntimer(long reconntimer) {
+		this.reconntimer = reconntimer;
+	}
 	
 }
