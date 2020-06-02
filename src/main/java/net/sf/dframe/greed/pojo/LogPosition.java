@@ -7,9 +7,9 @@ package net.sf.dframe.greed.pojo;
  */
 public class LogPosition {
 	
-	private String logfile;
+	private String logfile = null;
 	
-	private long position;
+	private long position = 0;
 
 	public String getLogfile() {
 		return logfile;

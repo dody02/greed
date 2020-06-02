@@ -1,12 +1,6 @@
 package net.sf.dframe.greed.service.impl;
 
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.Statement;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,9 +15,9 @@ import net.sf.dframe.cluster.hazelcast.HazelcastMasterSlaveCluster;
 import net.sf.dframe.greed.config.LoadJsonConfig;
 import net.sf.dframe.greed.pojo.GreedConfig;
 import net.sf.dframe.greed.pojo.LogPosition;
+import net.sf.dframe.greed.service.AbstractSyncServer;
 import net.sf.dframe.greed.service.ClientConnectionEventListener;
 import net.sf.dframe.greed.service.IConnectionListener;
-import net.sf.dframe.greed.service.ISyncService;
 import net.sf.dframe.greed.service.SynchronizedListenerAdapter;
 
 
@@ -36,23 +30,17 @@ import net.sf.dframe.greed.service.SynchronizedListenerAdapter;
  * @author Dody
  *
  */
-public class ConnectorSyncServer implements ISyncService {
+public class ConnectorSyncServer extends AbstractSyncServer {
 
 	private static Logger log = LoggerFactory.getLogger(ConnectorSyncServer.class);
 
 	private static final String POSITION = "POSITION";
 	
-	private BinaryLogClient client;
+//	private BinaryLogClient client;
 
 	private HazelcastMasterSlaveCluster cluster;
 
-//	private String hostname = "localhost";
-//	private int port = 3307;
-//	private String schema = "testbinlog";
-//	private String username = "root";
-//	private String password = "root";
-//	private String dbDriver = "com.mysql.cj.jdbc.Driver";
-	private GreedConfig config;
+	//private GreedConfig config;
 	
 	private ConnectorSyncEventDataParsing parsing = null;
 	
@@ -88,7 +76,7 @@ public class ConnectorSyncServer implements ISyncService {
 	public void start() throws Exception {
 		//create a clinet 
 		client = new BinaryLogClient(config.getHost(), config.getPort(), config.getSchema(), config.getUser(), config.getPassword());
-		
+		//client.setBlocking(config.isBlock());
 		//set id
 		if (config.getServerid() != 0L) {
 			client.setServerId(config.getServerid());
@@ -182,63 +170,7 @@ public class ConnectorSyncServer implements ISyncService {
 		}
 	}
 	
-	/**
-	 * get Schema info
-	 * @throws Exception 
-	 */
-	public  Map<String,Map<Integer,String>> initSchema() throws Exception {
-		Class.forName(config.getDrivername());
-//		Class.forName("com.mysql.jdbc.Driver ");
-		Connection conn = null;
-		Statement statement = null;
-		ResultSet rs = null;
-		Map<String,Map<Integer,String>> schemainfo = new HashMap<String,Map<Integer,String>>();
-		try {
-			conn = DriverManager.getConnection("jdbc:mysql://"+config.getHost()+":"+config.getPort()+"/"+config.getSchema()+"?useSSL=false&serverTimezone=UTC",config.getUser(),config.getPassword());
-//			conn = DriverManager.getConnection("jdbc:mysql://localhost:3307/testbinlog?useSSL=false&serverTimezone=UTC",this.username,this.password);
-			statement = conn.createStatement();
-			String sql = "select TABLE_SCHEMA, TABLE_NAME, COLUMN_NAME, ORDINAL_POSITION from INFORMATION_SCHEMA.COLUMNS  WHERE table_schema = '"+config.getSchema()+"';";
-			rs = statement.executeQuery(sql);
-			while (rs.next()) {
-				Map<Integer,String> columnsInfo = schemainfo.get(rs.getString("TABLE_NAME")) ;
-				if (columnsInfo == null) {
-					columnsInfo = new HashMap<Integer,String>();
-				}
-				columnsInfo.put(rs.getInt("ORDINAL_POSITION"),rs.getString("COLUMN_NAME"));
-				schemainfo.put(rs.getString("TABLE_NAME"), columnsInfo);//set table
-			}
-			
-		}catch (Exception e ) {
-			log.error("initSchema Exception",e);
-		} finally {
-			if (rs != null) {
-				try {
-					rs.close();
-					rs = null;
-				} catch (Exception e) {
-					rs =null;
-				}
-			}
-			if (statement != null) {
-				try {
-					statement.close();
-					statement = null;
-				} catch (Exception e) {
-					statement =null;
-				}
-			}
-			if (conn != null) {
-				try {
-					conn.close();
-					conn = null;
-				} catch (Exception e) {
-					conn =null;
-				}
-			}
-		}
-		return schemainfo;
-		
-	}
+//	
 
 	/**
 	 * get log position
@@ -258,23 +190,29 @@ public class ConnectorSyncServer implements ISyncService {
 	 * @throws IOException 
 	 */
 	public void setPosition(LogPosition position) throws IOException {
-		if (position == null) {
-			client.setBinlogFilename(null);
-			client.setBinlogPosition(0);
-			cluster.getArributesMap().remove(POSITION);
-		}else {
-			client.setBinlogFilename(position.getLogfile());
-			client.setBinlogPosition(position.getPosition());
-			cluster.getArributesMap().put(POSITION, JSONObject.toJSONString(position));
-			
+		
+		if ( client != null) {
+			if (position == null) {
+				client.setBinlogFilename(null);
+				client.setBinlogPosition(0);
+				cluster.getArributesMap().remove(POSITION);
+			}else {
+				client.setBinlogFilename(position.getLogfile());
+				client.setBinlogPosition(position.getPosition());
+				cluster.getArributesMap().put(POSITION, JSONObject.toJSONString(position));
+				
+			}
+			if (client.isConnected()) {
+					client.disconnect();
+					if (!config.isAutoreconn()) {
+						client.connect();
+					}
+				
+			}
+		} else {
+			cluster.getArributesMap().put(POSITION, JSONObject.toJSONString(new LogPosition()));
 		}
-		if (client.isConnected()) {
-				client.disconnect();
-				if (!config.isAutoreconn()) {
-					client.connect();
-				}
-			
-		}
+		
 	}
 	
 	/**
@@ -320,12 +258,12 @@ public class ConnectorSyncServer implements ISyncService {
 		this.listener = listener;
 	}
 
-	public void setConfig(GreedConfig config) {
-		this.config = config;
-	}
-	public GreedConfig getConfig() {
-		return config;
-	}
+//	public void setConfig(GreedConfig config) {
+//		this.config = config;
+//	}
+//	public GreedConfig getConfig() {
+//		return config;
+//	}
 
 	/**
 	 * Find thread 

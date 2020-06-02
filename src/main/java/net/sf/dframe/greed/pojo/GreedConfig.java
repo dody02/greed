@@ -31,6 +31,7 @@ public class GreedConfig {
 	
 	private long serverid = 0L;
 	
+	private boolean block = true;
 	
 	public String getHost() {
 		return host;
@@ -126,5 +127,14 @@ public class GreedConfig {
 	public void setServerid(long serverid) {
 		this.serverid = serverid;
 	}
+
+	public boolean isBlock() {
+		return block;
+	}
+
+	public void setBlock(boolean block) {
+		this.block = block;
+	}
+	
 	
 }

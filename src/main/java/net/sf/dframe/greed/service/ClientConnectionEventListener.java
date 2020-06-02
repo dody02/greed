@@ -10,6 +10,7 @@ import com.github.shyiko.mysql.binlog.BinaryLogClient.LifecycleListener;
 
 import net.sf.dframe.greed.pojo.LogPosition;
 import net.sf.dframe.greed.service.impl.ConnectorSyncServer;
+import net.sf.dframe.greed.service.impl.FreeConnectorSyncServer;
 /**
  * Connection event listener
  * @author Dody
@@ -17,13 +18,13 @@ import net.sf.dframe.greed.service.impl.ConnectorSyncServer;
  */
 public class ClientConnectionEventListener implements LifecycleListener{
 
-	private static Logger log = LoggerFactory.getLogger(ConnectorSyncServer.class);
+	private static Logger log = LoggerFactory.getLogger(ClientConnectionEventListener.class);
 	
 	private long timeout = 60000; 
 	
 	private IConnectionListener listener = null;
 	
-	private ConnectorSyncServer server ;
+	private AbstractSyncServer server ;
 	
 	private boolean retrylogerr = false;
 	
@@ -33,7 +34,7 @@ public class ClientConnectionEventListener implements LifecycleListener{
 	
 	
 	
-	public ClientConnectionEventListener (ConnectorSyncServer server) {
+	public ClientConnectionEventListener (AbstractSyncServer server) {
 		this.server = server;
 		retrylogerr= server.getConfig().isRetrylogerr();
 	}
@@ -52,14 +53,23 @@ public class ClientConnectionEventListener implements LifecycleListener{
 		
 		if (ex instanceof  com.github.shyiko.mysql.binlog.network.ServerException) {
 			if (ex.getMessage().contains("Could not find first log file name in binary log index file")) {
-				if (retrylogerr ) { // reset and try again
-					log.info("binlog file position not synchronized, try to reset posion and reconnected");
-					try {
-						server.setPosition(new LogPosition());
-					} catch (IOException e) {
-						log.error("re connection exception ",e);
-					}
-				} 
+				log.warn("Could not find first log file name in binary log index file",ex);
+				if (server instanceof ConnectorSyncServer) {
+					if (retrylogerr ) { // reset and try again
+						log.info("binlog file position not synchronized, try to reset posion and reconnected");
+						try {
+							((ConnectorSyncServer)server).setPosition(new LogPosition());
+						} catch (IOException e) {
+							log.error("re connection exception ",e);
+						}
+					}	
+				} else {
+					log.info("reset posistion");
+					client.setBinlogFilename(null);
+					client.setBinlogPosition(0);
+				}
+			} else {
+				log.error("CommunicationFailure",ex);
 			}
 				
 		}
@@ -84,43 +94,11 @@ public class ClientConnectionEventListener implements LifecycleListener{
 
 	@Override
 	public void onDisconnect(BinaryLogClient client) {
-		
-//		if (autoConnect) {
-//			log.info("auto Connection processing ……");
-//			//1. stop server 
-//			server.stop();
-//			log.info("stop synchronization server ……");
-//			//2. restart server
-//			RestartThread rt = new RestartThread();
-//			rt.start();
-//			log.info("append retry time !");
-//				
-//			try {
-//				Thread.sleep(timeout);
-//				while (!server.isStarted() && (this.currentRetryTime <= this.maxRetryTime)) {
-//					log.info("checked restart server result : server is not started yet!");
-//					retry();//叠加
-//					Thread.sleep(timeout);
-//				}
-//					
-//			} catch (InterruptedException e) {
-//			}
-//			if (!server.isStarted()) {
-//				try {
-//					server.stop();
-//					rt.interrupt();
-//				} catch(Exception e) {
-//					log.warn("stop retry connected server exception ",e);
-//				}
-//				server.getConfig().setLogposition(new LogPosition());
-//				RestartThread rt2 = new RestartThread();
-//				rt2.start();
-//			}
-//			
-//		} else {// END Auto reconnected
-//			log.info("NO AUTO RECONNECTE CONFIG,DO NOTHING");
-//		} 
-		
+		if (server instanceof FreeConnectorSyncServer) {
+			server.resetPosition();
+//			client.setBinlogFilename(null);
+//			client.setBinlogPosition(0);
+		}
 		if (listener != null) {
 			listener.onDisConnected(server);
 		} 

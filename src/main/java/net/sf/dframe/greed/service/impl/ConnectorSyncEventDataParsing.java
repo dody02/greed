@@ -20,6 +20,7 @@ import net.sf.dframe.greed.pojo.EventData;
 import net.sf.dframe.greed.pojo.EventType;
 import net.sf.dframe.greed.pojo.SynchronizedEvent;
 import net.sf.dframe.greed.pojo.TableMap;
+import net.sf.dframe.greed.service.AbstractSyncServer;
 import net.sf.dframe.greed.service.SynchronizedListenerAdapter;
 
 
@@ -43,9 +44,9 @@ public class ConnectorSyncEventDataParsing {
 	//listener
 	private SynchronizedListenerAdapter listener;
 	//server
-	private ConnectorSyncServer server;
+	private AbstractSyncServer server;
 
-	public ConnectorSyncEventDataParsing(ConnectorSyncServer server,SynchronizedListenerAdapter listener) throws Exception {
+	public ConnectorSyncEventDataParsing(AbstractSyncServer server,SynchronizedListenerAdapter listener) throws Exception {
 		this.server = server;
 		this.listener = listener;
 		schemaInfo = server.initSchema();////get columns info 
