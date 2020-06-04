@@ -38,13 +38,12 @@ public class ConnectorSyncServer extends AbstractSyncServer {
 	
 //	private BinaryLogClient client;
 
-	private HazelcastMasterSlaveCluster cluster;
+//	private HazelcastMasterSlaveCluster cluster;
 
 	//private GreedConfig config;
 	
 	private ConnectorSyncEventDataParsing parsing = null;
 	
-	private SynchronizedListenerAdapter listener;
 	
 	private String url = "greed.json";
 	
@@ -246,17 +245,17 @@ public class ConnectorSyncServer extends AbstractSyncServer {
 		}
 	}
 
-	public HazelcastMasterSlaveCluster getCluster() {
-		return cluster;
-	}
-
-	public void setCluster(HazelcastMasterSlaveCluster cluster) {
-		this.cluster = cluster;
-	}
-	
-	public void setListener(SynchronizedListenerAdapter listener) {
-		this.listener = listener;
-	}
+//	public HazelcastMasterSlaveCluster getCluster() {
+//		return cluster;
+//	}
+//
+//	public void setCluster(HazelcastMasterSlaveCluster cluster) {
+//		this.cluster = cluster;
+//	}
+//	
+//	public void setListener(SynchronizedListenerAdapter listener) {
+//		this.listener = listener;
+//	}
 
 //	public void setConfig(GreedConfig config) {
 //		this.config = config;

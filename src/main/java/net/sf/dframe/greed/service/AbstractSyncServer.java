@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import com.github.shyiko.mysql.binlog.BinaryLogClient;
 
+import net.sf.dframe.cluster.hazelcast.HazelcastMasterSlaveCluster;
 import net.sf.dframe.greed.pojo.GreedConfig;
 import net.sf.dframe.greed.pojo.LogPosition;
 
@@ -23,6 +24,12 @@ public abstract class AbstractSyncServer implements ISyncService{
 	protected GreedConfig config;
 	
 	protected BinaryLogClient client = null;
+	
+	protected HazelcastMasterSlaveCluster cluster;
+	
+	
+
+	protected SynchronizedListenerAdapter listener;
 	/**
 	 * get Schema info
 	 * @throws Exception 
@@ -100,6 +107,19 @@ public abstract class AbstractSyncServer implements ISyncService{
 			client.setBinlogPosition(0);	
 		} 
 		
+	}
+	
+	
+	public HazelcastMasterSlaveCluster getCluster() {
+		return cluster;
+	}
+
+	public void setCluster(HazelcastMasterSlaveCluster cluster) {
+		this.cluster = cluster;
+	}
+	
+	public void setListener(SynchronizedListenerAdapter listener) {
+		this.listener = listener;
 	}
 
 

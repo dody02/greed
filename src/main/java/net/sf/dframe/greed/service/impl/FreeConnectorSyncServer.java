@@ -22,14 +22,7 @@ public class FreeConnectorSyncServer extends AbstractSyncServer {
 
 	private static Logger log = LoggerFactory.getLogger(FreeConnectorSyncServer.class);
 
-	
-
-	private HazelcastMasterSlaveCluster cluster;
-
-
 	private ConnectorSyncEventDataParsing parsing = null;
-
-	private SynchronizedListenerAdapter listener;
 
 	private String url = "greed.json";
 
@@ -126,5 +119,8 @@ public class FreeConnectorSyncServer extends AbstractSyncServer {
 		}
 		return false;
 	}
+	
+	
+	
 
 }
