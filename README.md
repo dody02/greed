@@ -20,21 +20,21 @@ public static void main(String[] arg) throws Exception {
 
         @Override
         public void onDelete(SynchronizedEvent event) {
-            System.out.println("**********delete :"+event);
+            System.out.println("**********delete :"+event.getEventData().getTable());
             System.out.println("**********事件类型："+event.getEventType());
             System.out.println("**********删除的数据："+event.getEventData().getRowData());
         }
 
         @Override
         public void onInsert(SynchronizedEvent event) {
-            System.out.println("**********insert :"+event);
+            System.out.println("**********insert :"+event.getEventData().getTable());
             System.out.println("**********事件类型："+event.getEventType());
             System.out.println("**********插入的数据："+event.getEventData().getRowData());
         }
 
         @Override
         public void onUpdate(SynchronizedEvent event) {
-            System.out.println("**********update :"+event);
+            System.out.println("**********update :"+event.getEventData().getTable());
             System.out.println("**********事件类型："+event.getEventType());
             System.out.println("**********修改前数据："+event.getEventData().getBeforeRowData());
             System.out.println("**********修改后数据："+event.getEventData().getRowData());
