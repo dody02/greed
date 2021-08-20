@@ -20,33 +20,70 @@ import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * 简化mysql数据监听同步服务，默认支持主从集群
+ * @author dody
+ */
 public class SimpleSyncMysqlDataService implements ISyncService {
 
     private static Logger log = LoggerFactory.getLogger(SimpleSyncMysqlDataService.class);
     private static final String POSITION = "POSITION";
 
-
+    /**
+     * 监听客户端
+     */
     private BinaryLogClient client = null;
-
+    /**
+     * 主从集群
+     */
     private SimpleMasterSlaveCluster cluster = null;
-
+    /**
+     * 同步事件监听器
+     */
     private SynchronizedListenerAdapter sla = null;
-
+    /**
+     * 配置信息
+     */
     private SimpleSyncMysqlConfig config= null;
-
+    /**
+     * 数据解析器
+     */
     private SimpleEventDataParsing parsing = null;
-
+    /**
+     * 客气端连接监听
+     */
     private SimpleConnectionEventListener connlistener;
 
+    /**
+     * 数据库名
+     */
     private String schema;
+    /**
+     * 主机
+     */
     private String host;
+    /**
+     * 端口
+     */
     private int port;
 
-
+    /**
+     * 构建监听同步服务
+     * @param config 配置信息
+     * @param listener 事件监听器
+     * @throws Exception
+     */
     public SimpleSyncMysqlDataService(SimpleSyncMysqlConfig config,SynchronizedListenerAdapter listener) throws Exception {
         this(config,listener,new SimpleMasterSlaveCluster());
     }
 
+    /**
+     * 构建监听同步服务
+     * @param config 配置信息
+     * @param listener 事件监听
+     * @param cluster 主从集群
+     * @throws Exception
+     */
     public SimpleSyncMysqlDataService(SimpleSyncMysqlConfig config,SynchronizedListenerAdapter listener,SimpleMasterSlaveCluster cluster) throws Exception {
         this.cluster = cluster;
         this.config = config;
@@ -196,6 +233,15 @@ public class SimpleSyncMysqlDataService implements ISyncService {
          * 是否自动重连
          */
         client.setKeepAlive(config.isAutoreconn());
+        /**
+         * 自动重连时间间隔
+         */
+        client.setKeepAliveInterval(config.getMinsecInterval());
+        /**
+         * 设置位置
+         */
+        if (config.isGetHisPosition())
+            client.setBinlogPosition(config.getLogPosition().getPosition());
         /**
          * 连接至数据库，启动服务
          */
