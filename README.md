@@ -8,8 +8,10 @@ public static void main(String[] arg) throws Exception {
         String user ="user";
         String password = "password";
         String url = "jdbc:mysql://localhost:3306/db?useSSL=false&serverTimezone=UTC";
-        SimpleSyncMysqlConfig ssmc = new SimpleSyncMysqlConfig( url,user,password);
-
+        //默认构建，不同步历史数据，即重连接也只从连接的时间点开始监听
+        // SimpleSyncMysqlConfig ssmc = new SimpleSyncMysqlConfig( url,user,password);
+        // 构建时，指定了重连接的时间间隔为10秒，并设置记录同步历史位置，即重连接后会从上次位置开始继续同步
+        SimpleSyncMysqlConfig ssmc = new SimpleSyncMysqlConfig( url,user,password,10000,true);
         SimpleSyncMysqlDataService ssds = new SimpleSyncMysqlDataService(ssmc,new Listener());
         ssds.start();
     }
