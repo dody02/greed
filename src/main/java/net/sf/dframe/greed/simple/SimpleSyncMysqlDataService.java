@@ -186,7 +186,7 @@ public class SimpleSyncMysqlDataService implements ISyncService {
         /**
          * 是否加载历史位置
          */
-        if (config.isGetHisPosition() ) {
+        if (!config.isGetHisPosition() ) {
             this.setPosition(config.getLogposition());
             log.info("set position in config file");
         } else {
@@ -237,11 +237,6 @@ public class SimpleSyncMysqlDataService implements ISyncService {
          * 自动重连时间间隔
          */
         client.setKeepAliveInterval(config.getMinsecInterval());
-        /**
-         * 设置位置
-         */
-        if (config.isGetHisPosition())
-            client.setBinlogPosition(config.getLogPosition().getPosition());
         /**
          * 连接至数据库，启动服务
          */

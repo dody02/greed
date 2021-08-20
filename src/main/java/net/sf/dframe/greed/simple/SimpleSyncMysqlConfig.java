@@ -53,7 +53,7 @@ public class SimpleSyncMysqlConfig {
      * @param password 数据库密码
      * @param autoreconn 自动重新连接
      * @param minsecInterval 自动重新连接时间间隔
-     * @param getHisPosition 是否获取历史数据位置
+     * @param getHisPosition 是否获取历史数据位置,获取历史数据则无视数据位置
      * @param position 历史数据位置
      */
     public SimpleSyncMysqlConfig(long serverid,String drivername,String url, String user,String password,boolean autoreconn,long minsecInterval,boolean getHisPosition,LogPosition position){
@@ -157,10 +157,10 @@ public class SimpleSyncMysqlConfig {
      * @param user 数据库用户
      * @param password 自动重连间隔
      * @param minsecInterval 自动重连间隔
-     * @param position 是否获取历史数据
+     * @param position 指定数据位置
      */
     public SimpleSyncMysqlConfig(long serverid,String url, String user,String password,long minsecInterval,LogPosition position) {
-        this(1L,"com.mysql.jdbc.Driver",url,user,password,true,minsecInterval,true,position);
+        this(1L,"com.mysql.jdbc.Driver",url,user,password,true,minsecInterval,false,position);
     }
 
     /**
@@ -169,10 +169,21 @@ public class SimpleSyncMysqlConfig {
      * @param user 数据库用户
      * @param password 自动重连间隔
      * @param minsecInterval 自动重连间隔
-     * @param position 是否获取历史数据
+     * @param position 指定数据位置
      */
     public SimpleSyncMysqlConfig(String url, String user,String password,long minsecInterval,LogPosition position) {
-        this(1L,"com.mysql.jdbc.Driver",url,user,password,true,minsecInterval,true,position);
+        this(1L,"com.mysql.jdbc.Driver",url,user,password,true,minsecInterval,false,position);
+    }
+
+    /**
+     * 构建简单同步服务配置
+     * @param url 数据库JDBC连接URL
+     * @param user 数据库用户
+     * @param password 自动重连间隔
+     * @param position 指定数据位置
+     */
+    public SimpleSyncMysqlConfig(String url, String user,String password,LogPosition position) {
+        this(1L,"com.mysql.jdbc.Driver",url,user,password,true,60000,false,position);
     }
 
     public void setDrivername(){
