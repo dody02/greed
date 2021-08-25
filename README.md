@@ -10,7 +10,9 @@ public static void main(String[] arg) throws Exception {
         String url = "jdbc:mysql://localhost:3306/zib_wl?useSSL=false&serverTimezone=UTC";
         // 建立一个最简化的配置对象，给定要同步的数据库连接信息即可。
         //SimpleSyncMysqlConfig ssmc = new SimpleSyncMysqlConfig( url,user,password);
-        // 建立一个简单的配置对象，指定中间网络出现断开后，自动重连接时间间隔为10秒； 上面一句的构造，默认也会自动重连接，但时间间隔为60秒。
+        // 建立一个简单的配置对象，指定中间网络出现断开后，自动重连接,默认也会自动重连接。 
+        //上面一句的构造，默认时间间隔为60秒；这里设置时间间隔为10秒。
+        //最后一个参数是 true ，表示记录历史位置，即启动后会将之前的历史补上。默认为false； 只从启动时的当前位置开始。
         SimpleSyncMysqlConfig ssmc = new SimpleSyncMysqlConfig( url,user,password,10000,true);
        //指定同步的表名，支持多个，支持*号，支持前缀
        SyncTableName stn = new SyncTableName("wl_*","table_*","memeber_relation");
