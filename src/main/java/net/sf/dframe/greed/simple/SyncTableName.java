@@ -55,7 +55,11 @@ public class SyncTableName {
      * @param tablename
      */
     public void removeSyncTable (String tablename){
-        tables.remove(tablename);
+        if (!tablename.equals("*") && tablename.endsWith("*")){
+          tablePrex.remove(tablename);
+        } else {
+            tables.remove(tablename);
+        }
     }
 
     /**
@@ -63,7 +67,12 @@ public class SyncTableName {
      * @param tablename
      */
     public void addSyncTable(String tablename){
-        tables.add(tablename);
+        if (!tablename.equals("*") && tablename.endsWith("*")){
+            tablePrex.add(tablename);
+        } else {
+            tables.add(tablename);
+        }
+
     }
 
     /**

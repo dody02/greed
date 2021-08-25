@@ -60,4 +60,11 @@ public abstract class SimpleDataListener  implements ISynchronizedListener{
      */
     public abstract void onUpdate(SynchronizedEvent event);
 
+    /**
+     * 设置同步表名列表
+     * @param syncTableName
+     */
+    public void setSyncTableName(SyncTableName syncTableName) {
+        this.syncTableName = syncTableName;
+    }
 }
