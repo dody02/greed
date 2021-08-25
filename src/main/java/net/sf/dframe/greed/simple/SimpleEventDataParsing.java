@@ -37,11 +37,10 @@ public class SimpleEventDataParsing {
 	private String schemaName;
 
 	//listener
-	private SynchronizedListenerAdapter listener;
-	//server
-//	private AbstractSyncServer server;
+	private SimpleDataListener listener;
 
-	public SimpleEventDataParsing( String schemaName,Map<String, Map<Integer,String>> schemoInfo, SynchronizedListenerAdapter listener) throws Exception {
+
+	public SimpleEventDataParsing( String schemaName,Map<String, Map<Integer,String>> schemoInfo, SimpleDataListener listener) throws Exception {
 //		this.server = server;
 		this.schemaName = schemaName;
 		this.listener = listener;
@@ -143,7 +142,8 @@ public class SimpleEventDataParsing {
 			syncevent.setEventData(eventData);
 			syncevent.setEventType(eventType);
 
-			listener.onDelete(syncevent);
+//			listener.onDelete(syncevent);
+			listener.onData(syncevent);
 			 
 		}
 	}
@@ -175,7 +175,8 @@ public class SimpleEventDataParsing {
 			syncevent.setEventData(eventData);
 			syncevent.setEventType(eventType);
 
-			listener.onInsert(syncevent);
+//			listener.onInsert(syncevent);
+			listener.onData(syncevent);
 		}
 	}
 
@@ -212,7 +213,8 @@ public class SimpleEventDataParsing {
 			syncevent.setEventData(eventData);
 			syncevent.setEventType(eventType);
 
-			listener.onUpdate(syncevent);
+//			listener.onUpdate(syncevent);
+			listener.onData(syncevent);
 		}
 	}
 

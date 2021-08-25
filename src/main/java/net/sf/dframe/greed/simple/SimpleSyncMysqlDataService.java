@@ -40,7 +40,7 @@ public class SimpleSyncMysqlDataService implements ISyncService {
     /**
      * 同步事件监听器
      */
-    private SynchronizedListenerAdapter sla = null;
+    private SimpleDataListener sla = null;
     /**
      * 配置信息
      */
@@ -73,7 +73,7 @@ public class SimpleSyncMysqlDataService implements ISyncService {
      * @param listener 事件监听器
      * @throws Exception
      */
-    public SimpleSyncMysqlDataService(SimpleSyncMysqlConfig config,SynchronizedListenerAdapter listener) throws Exception {
+    public SimpleSyncMysqlDataService(SimpleSyncMysqlConfig config,SimpleDataListener listener) throws Exception {
         this(config,listener,new SimpleMasterSlaveCluster());
     }
 
@@ -84,7 +84,7 @@ public class SimpleSyncMysqlDataService implements ISyncService {
      * @param cluster 主从集群
      * @throws Exception
      */
-    public SimpleSyncMysqlDataService(SimpleSyncMysqlConfig config,SynchronizedListenerAdapter listener,SimpleMasterSlaveCluster cluster) throws Exception {
+    public SimpleSyncMysqlDataService(SimpleSyncMysqlConfig config,SimpleDataListener listener,SimpleMasterSlaveCluster cluster) throws Exception {
         this.cluster = cluster;
         this.config = config;
         this.sla=listener;
