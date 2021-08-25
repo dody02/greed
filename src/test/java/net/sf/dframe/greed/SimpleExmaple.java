@@ -14,6 +14,10 @@ public class SimpleExmaple {
     static class Listener extends SimpleDataListener {
 
 
+        public Listener() {
+
+        }
+
         public Listener(SyncTableName syncTableName) {
             super(syncTableName);
         }

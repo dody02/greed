@@ -5,21 +5,29 @@ simple way to synchronized mysql data
 # 启动方式：
 public static void main(String[] arg) throws Exception {
 
-        String user ="user";
-        String password = "password";
-        String url = "jdbc:mysql://localhost:3306/db?useSSL=false&serverTimezone=UTC";
-        //默认构建，不同步历史数据，即重连接也只从连接的时间点开始监听
-        // SimpleSyncMysqlConfig ssmc = new SimpleSyncMysqlConfig( url,user,password);
-        // 构建时，指定了重连接的时间间隔为10秒，并设置记录同步历史位置，即重连接后会从上次位置开始继续同步
+        String user ="asdf";
+        String password = "asdf";
+        String url = "jdbc:mysql://localhost:3306/zib_wl?useSSL=false&serverTimezone=UTC";
+        // 建立一个最简化的配置对象，给定要同步的数据库连接信息即可。
+        //SimpleSyncMysqlConfig ssmc = new SimpleSyncMysqlConfig( url,user,password);
+        // 建立一个简单的配置对象，指定中间网络出现断开后，自动重连接时间间隔为10秒； 上面一句的构造，默认也会自动重连接，但时间间隔为60秒。
         SimpleSyncMysqlConfig ssmc = new SimpleSyncMysqlConfig( url,user,password,10000,true);
-        SimpleSyncMysqlDataService ssds = new SimpleSyncMysqlDataService(ssmc,new Listener());
-        ssds.start();
+       //指定同步的表名，支持多个，支持*号，支持前缀
+       SyncTableName stn = new SyncTableName("wl_*","table_*","memeber_relation");
+       //构建一个同步服务，指定监听器。
+       SimpleSyncMysqlDataService ssds = new SimpleSyncMysqlDataService(ssmc,new Listener(stn));
+       ssds.start();
     }
 }
 
 # listener 由具体应用实现数据操作
- class Listener extends SynchronizedListenerAdapter {
-
+ class Listener extends SimpleDataListener {
+        //默认监听器构造器，将不做过滤
+        public Listener(){}
+       // 指定同步表名列表的监听器。
+        public Listener(SyncTableName syncTableName) {
+            super(syncTableName);
+        }
         @Override
         public void onDelete(SynchronizedEvent event) {
             System.out.println("**********delete :"+event.getEventData().getTable());

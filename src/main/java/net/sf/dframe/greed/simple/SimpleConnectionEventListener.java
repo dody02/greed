@@ -20,9 +20,6 @@ public class SimpleConnectionEventListener implements LifecycleListener{
 	private SimpleSyncMysqlDataService server ;
 
 
-
-
-
 	public SimpleConnectionEventListener(SimpleSyncMysqlDataService server) {
 		this.server = server;
 	}

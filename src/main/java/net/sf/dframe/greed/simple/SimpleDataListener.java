@@ -23,7 +23,7 @@ public abstract class SimpleDataListener  implements ISynchronizedListener{
     public SimpleDataListener (SyncTableName syncTableName){
         this.syncTableName = syncTableName;
     }
-
+    public SimpleDataListener () {}
 
     @Override
     public void onData(SynchronizedEvent event) {
