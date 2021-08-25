@@ -18,6 +18,9 @@ public class SyncTableName {
     public SyncTableName (String... tablename){
         if (tablename != null ){
             for(String name:tablename){
+                if (name== null || name.isEmpty()){ //do nothing
+                    continue; //跳过，并继续循环
+                }
                 if (!name.equals("*") && name.endsWith("*")){//前缀的表名
                     tablePrex.add(name.substring(0,name.indexOf("*")));
                 } else {
@@ -55,6 +58,9 @@ public class SyncTableName {
      * @param tablename
      */
     public void removeSyncTable (String tablename){
+        if (tablename== null || tablename.isEmpty()){ //do nothing
+            return;
+        }
         if (!tablename.equals("*") && tablename.endsWith("*")){
           tablePrex.remove(tablename);
         } else {
@@ -67,6 +73,9 @@ public class SyncTableName {
      * @param tablename
      */
     public void addSyncTable(String tablename){
+        if (tablename== null || tablename.isEmpty()){ //do nothing
+            return;
+        }
         if (!tablename.equals("*") && tablename.endsWith("*")){
             tablePrex.add(tablename);
         } else {

@@ -73,6 +73,8 @@ public class SimpleExmaple {
         }
         SimpleSyncMysqlDataService ssds = new SimpleSyncMysqlDataService(ssmc,new Listener(stn));
 
-        ssds.start();
+        ssds.start(); //这个方法是阻塞的。
+
+        System.out.println("&&&&&&&&&&是否是阻塞？？？");
     }
 }
