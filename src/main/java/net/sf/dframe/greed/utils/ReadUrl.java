@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 
 /**
  * 读取JDBC连接URL信息
+ * @author Dody
  */
 public class ReadUrl {
 
