@@ -299,7 +299,7 @@ public class SimpleSyncMysqlDataService implements ISyncService {
      * get log position
      * @return
      */
-    private LogPosition getPosition() {
+    public LogPosition getPosition() {
         LogPosition lp = null;
         String strLp = cluster.getArributesMap().get(POSITION);
         if (strLp != null && (!strLp.isEmpty())) {
