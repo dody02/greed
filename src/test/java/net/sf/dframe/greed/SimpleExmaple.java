@@ -61,7 +61,7 @@ public class SimpleExmaple {
 
         String user ="asdf";
         String password = "asdf";
-        String url = "jdbc:mysql://localhost:3306/zib_wl?useSSL=false&serverTimezone=UTC";
+        String url = "jdbc:mysql://localhost:3306/zib_wl?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true";
 //        SimpleSyncMysqlConfig ssmc = new SimpleSyncMysqlConfig( url,user,password);
         SimpleSyncMysqlConfig ssmc = new SimpleSyncMysqlConfig( url,user,password,10000,true);
 //        SyncTableName stn = new SyncTableName("*");

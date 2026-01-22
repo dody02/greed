@@ -10,7 +10,7 @@ public class SimpleSyncMysqlConfig {
     /**
      * mysql jdbc driver name
      */
-    private String drivername = "com.mysql.jdbc.Driver";
+    private String drivername = "com.mysql.cj.jdbc.Driver";
     /**
      * jdbc url
      */
