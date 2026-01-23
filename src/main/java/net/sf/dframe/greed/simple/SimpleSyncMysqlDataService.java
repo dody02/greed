@@ -1,6 +1,7 @@
 package net.sf.dframe.greed.simple;
 
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson2.JSON;
 import com.github.shyiko.mysql.binlog.BinaryLogClient;
 import com.github.shyiko.mysql.binlog.event.*;
 import com.github.shyiko.mysql.binlog.event.deserialization.*;
@@ -240,13 +241,18 @@ public class SimpleSyncMysqlDataService implements ISyncService {
          */
         EventDeserializer eventDeserializer = new EventDeserializer();
         eventDeserializer.setCompatibilityMode(EventDeserializer.CompatibilityMode.DATE_AND_TIME_AS_LONG);
+//        client.setEventDeserializer(eventDeserializer);
 
-
-        client.setEventDeserializer(eventDeserializer);
+        EventDeserializer resilientDeserializer = new ResilientEventDeserializerDecorator(eventDeserializer);
+        client.setEventDeserializer(resilientDeserializer);
 
         client.registerEventListener(new BinaryLogClient.EventListener() {
             @Override
             public void onEvent(Event event) {
+                if (event == null){
+                    log.error("****************被跳过的损坏事件");
+                    return;
+                }
                 log.debug(" receiver event: " + event.getHeader() + "," + event.getData());
                 if (cluster.isMeActive()) {
                     log.debug("current node is master node, do process");
