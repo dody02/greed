@@ -54,7 +54,11 @@ public class SimpleEventDataParsing {
 		
 		// change the Event and data
 		com.github.shyiko.mysql.binlog.event.EventData data = event.getData();
-
+		// 过滤掉不必要的事件
+		// 过滤掉不必要事件
+		if (event.getHeader().getEventType().name().endsWith("_ROWS")) {
+			return; // 不处理
+		}
 		// record event info
 		if (event.getHeader().getEventType() == com.github.shyiko.mysql.binlog.event.EventType.TABLE_MAP) {
 			TableMapEventData tableData = event.getData();

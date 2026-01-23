@@ -2,8 +2,9 @@ package net.sf.dframe.greed.simple;
 
 import com.alibaba.fastjson.JSONObject;
 import com.github.shyiko.mysql.binlog.BinaryLogClient;
-import com.github.shyiko.mysql.binlog.event.Event;
-import com.github.shyiko.mysql.binlog.event.deserialization.EventDeserializer;
+import com.github.shyiko.mysql.binlog.event.*;
+import com.github.shyiko.mysql.binlog.event.deserialization.*;
+import com.github.shyiko.mysql.binlog.io.ByteArrayInputStream;
 import net.sf.dframe.cluster.simple.SimpleMasterSlaveCluster;
 import net.sf.dframe.greed.pojo.LogPosition;
 import net.sf.dframe.greed.service.ISyncService;
@@ -239,7 +240,10 @@ public class SimpleSyncMysqlDataService implements ISyncService {
          */
         EventDeserializer eventDeserializer = new EventDeserializer();
         eventDeserializer.setCompatibilityMode(EventDeserializer.CompatibilityMode.DATE_AND_TIME_AS_LONG);
+
+
         client.setEventDeserializer(eventDeserializer);
+
         client.registerEventListener(new BinaryLogClient.EventListener() {
             @Override
             public void onEvent(Event event) {
