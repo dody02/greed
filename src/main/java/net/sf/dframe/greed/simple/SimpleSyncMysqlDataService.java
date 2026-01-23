@@ -218,19 +218,13 @@ public class SimpleSyncMysqlDataService implements ISyncService {
         /**
          * 是否加载历史位置
          */
-        if (!config.isGetHisPosition() ) {
-            //如果是有设置了LogPosition的话，使用具体点，否则需要自动获取
-            if (config.getLogposition() == null || config.getLogposition().getLogfile() == null){
-                //初始化
-                LogPosition firstLp = getFirstLogPosition(config);
-                this.setPosition(firstLp);
-            } else {
-                this.setPosition(config.getLogposition());
-            }
+        if (!config.isGetHisPosition() ) { // 不需要历史数据
 
+            this.setPosition(config.getLogposition());
             log.info("set position in config file");
         } else {
-            checkLogPosition();
+            LogPosition firstLp = getFirstLogPosition(config);
+            this.setPosition(firstLp);
             log.info("set position in cluster cache");
         }
         //init listener
