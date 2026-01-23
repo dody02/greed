@@ -219,7 +219,15 @@ public class SimpleSyncMysqlDataService implements ISyncService {
          * 是否加载历史位置
          */
         if (!config.isGetHisPosition() ) {
-            this.setPosition(config.getLogposition());
+            //如果是有设置了LogPosition的话，使用具体点，否则需要自动获取
+            if (config.getLogposition() == null){
+                //初始化
+                LogPosition firstLp = getFirstLogPosition(config);
+                this.setPosition(firstLp);
+            } else {
+                this.setPosition(config.getLogposition());
+            }
+
             log.info("set position in config file");
         } else {
             checkLogPosition();
@@ -279,6 +287,30 @@ public class SimpleSyncMysqlDataService implements ISyncService {
          * 连接至数据库，启动服务
          */
         client.connect();
+    }
+
+    /**
+     * 获取初始的日志位置
+     * @param config
+     * @return LogPosition
+     */
+    private LogPosition getFirstLogPosition(SimpleSyncMysqlConfig config) {
+        LogPosition lp = new LogPosition();
+        try{
+            Connection conn = DriverManager.getConnection(config.getUrl(), config.getUser(), config.getPassword());
+            Statement stmt = conn.createStatement();
+            ResultSet rs =  stmt.executeQuery("SHOW BINARY LOGS");
+            if (rs.next()) {
+                String filename = rs.getString("Log_name");
+                long fileSize = rs.getLong("File_size");
+                // 第一个binlog文件的起始位置通常是4（跳过文件头）
+                lp.setLogfile(filename);
+                lp.setPosition(4L); //固定值
+            }
+        }catch (Exception ex){
+            log.error("获取日志位置失败：",ex);
+        }
+        return lp;
     }
 
     @Override
@@ -424,4 +456,7 @@ public class SimpleSyncMysqlDataService implements ISyncService {
     public void setServiceId(String serviceId) {
         this.serviceId = serviceId;
     }
+
+
 }
+

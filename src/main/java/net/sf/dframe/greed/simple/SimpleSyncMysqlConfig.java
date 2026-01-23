@@ -96,6 +96,18 @@ public class SimpleSyncMysqlConfig {
 
     /**
      * 构建同步服务配置信息
+     * @param serverid 客户端ID
+     * @param drivername 数据库连接类
+     * @param url JDBC连接URL
+     * @param user 数据库用户名
+     * @param password 数据库密码
+     */
+    public SimpleSyncMysqlConfig(long serverid,String drivername,String url, String user,String password,boolean getHisPosition) {
+        this(serverid,drivername,url,user,password,true,60000,getHisPosition,new LogPosition());
+    }
+
+    /**
+     * 构建同步服务配置信息
      * @param serverid 客户端id
      * @param url JDBC连接URL
      * @param user 数据库用户名
@@ -177,14 +189,29 @@ public class SimpleSyncMysqlConfig {
 
     /**
      * 构建简单同步服务配置
+     * @param serviceId 任务ID
      * @param url 数据库JDBC连接URL
      * @param user 数据库用户
      * @param password 自动重连间隔
      * @param position 指定数据位置
      */
-    public SimpleSyncMysqlConfig(String url, String user,String password,LogPosition position) {
-        this(1L,"com.mysql.jdbc.Driver",url,user,password,true,60000,false,position);
+    public SimpleSyncMysqlConfig(long serviceId,String url, String user,String password,LogPosition position) {
+        this(serviceId,"com.mysql.jdbc.Driver",url,user,password,true,60000,false,position);
     }
+    /**
+     * 构建简单同步服务配置
+     * @param serviceId 任务ID
+     * @param dirver 驱动名称
+     * @param url 数据库JDBC连接URL
+     * @param user 数据库用户
+     * @param password 自动重连间隔
+     * @param position 指定数据位置
+     */
+    public SimpleSyncMysqlConfig(long serviceId,String dirver,String url, String user,String password,LogPosition position) {
+        this(serviceId,dirver,url,user,password,true,60000,false,position);
+    }
+
+
 
     public void setDrivername(){
         this.drivername = drivername;
