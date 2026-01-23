@@ -249,7 +249,7 @@ public class SimpleSyncMysqlDataService implements ISyncService {
                     try {
                         //record the position
                         LogPosition newLp = updateLogPosition();
-                        parsing.parsingEvent(event,newLp);
+                        parsing.parsingEvent(event,newLp,serviceId);
                     } catch (Exception e) {
                         log.error("Parsing Event data Exception",e);
                         try {
