@@ -5,7 +5,7 @@
 
 	<groupId>site.edody.dframe</groupId>
 	<artifactId>greed</artifactId>
-	<version>1.8</version>
+	<version>1.9</version>
 	<packaging>jar</packaging>
 
 	<name>greed</name>

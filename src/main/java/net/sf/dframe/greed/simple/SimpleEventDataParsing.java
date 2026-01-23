@@ -2,10 +2,9 @@ package net.sf.dframe.greed.simple;
 
 import com.alibaba.fastjson.JSONObject;
 import com.github.shyiko.mysql.binlog.event.*;
+import net.sf.dframe.greed.pojo.*;
 import net.sf.dframe.greed.pojo.EventData;
 import net.sf.dframe.greed.pojo.EventType;
-import net.sf.dframe.greed.pojo.SynchronizedEvent;
-import net.sf.dframe.greed.pojo.TableMap;
 import net.sf.dframe.greed.service.AbstractSyncServer;
 import net.sf.dframe.greed.service.SynchronizedListenerAdapter;
 import org.slf4j.Logger;
@@ -51,7 +50,7 @@ public class SimpleEventDataParsing {
 	 * 解析事件
 	 * @param event
 	 */
-	public void parsingEvent(Event event) {
+	public void parsingEvent(Event event, LogPosition lp) {
 		
 		// change the Event and data
 		com.github.shyiko.mysql.binlog.event.EventData data = event.getData();
@@ -78,7 +77,7 @@ public class SimpleEventDataParsing {
 					log.debug("not aim schema,do nothing!");
 					return;
 				} else {
-					processUpdateEvent(event, tablemap);
+					processUpdateEvent(event, tablemap ,lp);
 				}
 			}
 		} else if (data instanceof WriteRowsEventData) {
@@ -93,7 +92,7 @@ public class SimpleEventDataParsing {
 					log.debug("not aim schema,do nothing!");
 					return;
 				} else {
-					processInsertEvent(event, tablemap);
+					processInsertEvent(event, tablemap ,lp);
 				}
 			}
 
@@ -109,7 +108,7 @@ public class SimpleEventDataParsing {
 					log.debug("not aim schema,do nothing!");
 					return;
 				} else {
-					processDelete(event, tablemap);
+					processDelete(event, tablemap,lp);
 				}
 			}
 		}
@@ -121,7 +120,7 @@ public class SimpleEventDataParsing {
 	 * @param event
 	 * @param tablemap
 	 */
-	private void processDelete(Event event, TableMap tablemap) {
+	private void processDelete(Event event, TableMap tablemap , LogPosition lp) {
 		EventType eventType = EventType.DELETE;
 		EventData eventData = new EventData();
 		eventData.setSchema(tablemap.getDatabase());
@@ -141,7 +140,7 @@ public class SimpleEventDataParsing {
 			syncevent.setTimestamp(event.getHeader().getTimestamp());
 			syncevent.setEventData(eventData);
 			syncevent.setEventType(eventType);
-
+			syncevent.setLogPosition(lp);
 //			listener.onDelete(syncevent);
 			listener.onData(syncevent);
 			 
@@ -154,7 +153,7 @@ public class SimpleEventDataParsing {
 	 * @param event
 	 * @param tablemap
 	 */
-	private void processInsertEvent(Event event, TableMap tablemap) {
+	private void processInsertEvent(Event event, TableMap tablemap,LogPosition lp) {
 		EventType eventType = EventType.INSERT;
 		EventData eventData = new EventData();
 		eventData.setSchema(tablemap.getDatabase());
@@ -174,7 +173,7 @@ public class SimpleEventDataParsing {
 			syncevent.setTimestamp(event.getHeader().getTimestamp());
 			syncevent.setEventData(eventData);
 			syncevent.setEventType(eventType);
-
+			syncevent.setLogPosition(lp);
 //			listener.onInsert(syncevent);
 			listener.onData(syncevent);
 		}
@@ -186,7 +185,7 @@ public class SimpleEventDataParsing {
 	 * @param event
 	 * @param tablemap
 	 */
-	private void processUpdateEvent(Event event, TableMap tablemap) {
+	private void processUpdateEvent(Event event, TableMap tablemap ,LogPosition lp) {
 		EventType eventType = EventType.UPDATE;
 		EventData eventData = new EventData();
 		eventData.setSchema(tablemap.getDatabase());
@@ -212,7 +211,7 @@ public class SimpleEventDataParsing {
 			syncevent.setTimestamp(event.getHeader().getTimestamp());
 			syncevent.setEventData(eventData);
 			syncevent.setEventType(eventType);
-
+			syncevent.setLogPosition(lp);
 //			listener.onUpdate(syncevent);
 			listener.onData(syncevent);
 		}

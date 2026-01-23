@@ -29,6 +29,7 @@ public class SimpleSyncMysqlDataService implements ISyncService {
     private static Logger log = LoggerFactory.getLogger(SimpleSyncMysqlDataService.class);
     private static final String POSITION = "POSITION";
 
+    private String serviceId ="_" ;
     /**
      * 监听客户端
      */
@@ -76,6 +77,37 @@ public class SimpleSyncMysqlDataService implements ISyncService {
     public SimpleSyncMysqlDataService(SimpleSyncMysqlConfig config,SimpleDataListener listener) throws Exception {
         this(config,listener,new SimpleMasterSlaveCluster());
     }
+
+    /**
+     * 构建监听同步服务
+     * @param config 配置信息
+     * @param listener 事件监听器
+     * @throws Exception
+     */
+    public SimpleSyncMysqlDataService(String serviceId ,SimpleSyncMysqlConfig config,SimpleDataListener listener) throws Exception {
+        this(serviceId,config,listener,new SimpleMasterSlaveCluster());
+    }
+
+
+    /**
+     * 构建监听同步服务
+     * @param config 配置信息
+     * @param listener 事件监听
+     * @param cluster 主从集群
+     * @throws Exception
+     */
+    public SimpleSyncMysqlDataService(String serviceId,SimpleSyncMysqlConfig config,SimpleDataListener listener,SimpleMasterSlaveCluster cluster) throws Exception {
+        this.serviceId = "_"+serviceId;
+        this.cluster = cluster;
+        this.config = config;
+        this.sla=listener;
+        this.connlistener = new SimpleConnectionEventListener(this);
+        JSONObject mysqlInfo = ReadUrl.readMysqlUrl(config.getUrl());
+        this.host = mysqlInfo.getString(ReadUrl.HOST);
+        this.port = mysqlInfo.getInteger(ReadUrl.PORT);
+        this.schema = mysqlInfo.getString(ReadUrl.SCHEMA);
+    }
+
 
     /**
      * 构建监听同步服务
@@ -213,12 +245,18 @@ public class SimpleSyncMysqlDataService implements ISyncService {
                 if (cluster.isMeActive()) {
                     log.debug("current node is master node, do process");
                     //to do event data process
+                    LogPosition lp = getPosition();
                     try {
-                        parsing.parsingEvent(event);
                         //record the position
-                        updateLogPosition();
+                        LogPosition newLp = updateLogPosition();
+                        parsing.parsingEvent(event,newLp);
                     } catch (Exception e) {
                         log.error("Parsing Event data Exception",e);
+                        try {
+                            setPosition(lp);
+                        } catch (IOException ex) {
+                            log.error("Rest position when Parsing Event data Exception",ex);
+                        }
                     }
                 } else {
                     log.info("current node is not master node, do nothing! master node is :"+cluster.getActive());
@@ -301,7 +339,7 @@ public class SimpleSyncMysqlDataService implements ISyncService {
      */
     public LogPosition getPosition() {
         LogPosition lp = null;
-        String strLp = cluster.getArributesMap().get(POSITION);
+        String strLp = cluster.getArributesMap().get(POSITION+serviceId);
         if (strLp != null && (!strLp.isEmpty())) {
             lp = JSONObject.parseObject(strLp, LogPosition.class);
         }
@@ -319,7 +357,7 @@ public class SimpleSyncMysqlDataService implements ISyncService {
             if (position == null) {
                 client.setBinlogFilename(null);
                 client.setBinlogPosition(0);
-                cluster.getArributesMap().remove(POSITION);
+                cluster.getArributesMap().remove(POSITION+serviceId);
             }else {
                 client.setBinlogFilename(position.getLogfile());
                 client.setBinlogPosition(position.getPosition());
@@ -334,7 +372,7 @@ public class SimpleSyncMysqlDataService implements ISyncService {
 
             }
         } else {
-            cluster.getArributesMap().put(POSITION, JSONObject.toJSONString(new LogPosition()));
+            cluster.getArributesMap().put(POSITION+serviceId, JSONObject.toJSONString(new LogPosition()));
         }
 
     }
@@ -342,11 +380,12 @@ public class SimpleSyncMysqlDataService implements ISyncService {
     /**
      * record the current position
      */
-    public void updateLogPosition() {
+    public LogPosition updateLogPosition() {
         LogPosition  lp  = new LogPosition();
         lp.setLogfile(client.getBinlogFilename());
         lp.setPosition(client.getBinlogPosition());
-        cluster.getArributesMap().put(POSITION, JSONObject.toJSONString(lp));
+        cluster.getArributesMap().put(POSITION+serviceId, JSONObject.toJSONString(lp));
+        return lp;
     }
 
 
@@ -370,4 +409,19 @@ public class SimpleSyncMysqlDataService implements ISyncService {
         return null;
     }
 
+    /**
+     * 获取ServiceID
+     * @return serviceId
+     */
+    public String getServiceId() {
+        return serviceId;
+    }
+
+    /**
+     * setServiceID
+     * @param serviceId
+     */
+    public void setServiceId(String serviceId) {
+        this.serviceId = serviceId;
+    }
 }

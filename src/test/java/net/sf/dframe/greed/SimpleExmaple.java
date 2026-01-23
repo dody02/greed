@@ -59,13 +59,14 @@ public class SimpleExmaple {
 
     public static void main(String[] arg) throws Exception {
 
-        String user ="asdf";
+        String user ="root";
         String password = "asdf";
-        String url = "jdbc:mysql://localhost:3306/zib_wl?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true";
+        String url = "jdbc:mysql://localhost:3306/etl?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true";
 //        SimpleSyncMysqlConfig ssmc = new SimpleSyncMysqlConfig( url,user,password);
         SimpleSyncMysqlConfig ssmc = new SimpleSyncMysqlConfig( url,user,password,10000,true);
 //        SyncTableName stn = new SyncTableName("*");
-        SyncTableName stn = new SyncTableName("wl_*");
+//        SyncTableName stn = new SyncTableName("wl_*");
+        SyncTableName stn = new SyncTableName("*");
         System.out.println("过滤的表名：");
         List<String> tables = stn.getTableList();
         for (String t:tables){

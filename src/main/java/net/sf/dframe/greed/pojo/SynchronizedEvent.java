@@ -13,8 +13,18 @@ public class SynchronizedEvent {
 	private EventType eventType;
 	
 	private EventData eventData;
-	
+
+	public LogPosition getLogPosition() {
+		return logPosition;
+	}
+
+	public void setLogPosition(LogPosition logPosition) {
+		this.logPosition = logPosition;
+	}
+
 	private long timestamp;
+
+	private LogPosition logPosition;
 	
 	public EventType getEventType() {
 		return eventType;
