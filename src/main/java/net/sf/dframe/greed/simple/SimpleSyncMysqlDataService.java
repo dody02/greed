@@ -220,7 +220,7 @@ public class SimpleSyncMysqlDataService implements ISyncService {
          */
         if (!config.isGetHisPosition() ) {
             //如果是有设置了LogPosition的话，使用具体点，否则需要自动获取
-            if (config.getLogposition() == null){
+            if (config.getLogposition() == null || config.getLogposition().getLogfile() == null){
                 //初始化
                 LogPosition firstLp = getFirstLogPosition(config);
                 this.setPosition(firstLp);
