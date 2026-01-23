@@ -14,18 +14,33 @@ public class SynchronizedEvent {
 	
 	private EventData eventData;
 
+
+	private long timestamp;
+
+	private LogPosition logPosition;
+
+	private String serivceId; //服务ID，启动多个任务的情况下，方便处理时区分
+
+
+	public String getSerivceId() {
+		return serivceId;
+	}
+
+	public void setSerivceId(String serivceId) {
+		this.serivceId = serivceId;
+	}
+
 	public LogPosition getLogPosition() {
 		return logPosition;
 	}
+
+
 
 	public void setLogPosition(LogPosition logPosition) {
 		this.logPosition = logPosition;
 	}
 
-	private long timestamp;
 
-	private LogPosition logPosition;
-	
 	public EventType getEventType() {
 		return eventType;
 	}

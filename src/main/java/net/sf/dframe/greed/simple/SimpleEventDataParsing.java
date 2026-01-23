@@ -50,7 +50,7 @@ public class SimpleEventDataParsing {
 	 * 解析事件
 	 * @param event
 	 */
-	public void parsingEvent(Event event, LogPosition lp) {
+	public void parsingEvent(Event event, LogPosition lp ,String serviceId) {
 		
 		// change the Event and data
 		com.github.shyiko.mysql.binlog.event.EventData data = event.getData();
@@ -77,7 +77,7 @@ public class SimpleEventDataParsing {
 					log.debug("not aim schema,do nothing!");
 					return;
 				} else {
-					processUpdateEvent(event, tablemap ,lp);
+					processUpdateEvent(event, tablemap ,lp ,serviceId);
 				}
 			}
 		} else if (data instanceof WriteRowsEventData) {
@@ -92,7 +92,7 @@ public class SimpleEventDataParsing {
 					log.debug("not aim schema,do nothing!");
 					return;
 				} else {
-					processInsertEvent(event, tablemap ,lp);
+					processInsertEvent(event, tablemap ,lp ,serviceId);
 				}
 			}
 
@@ -108,7 +108,7 @@ public class SimpleEventDataParsing {
 					log.debug("not aim schema,do nothing!");
 					return;
 				} else {
-					processDelete(event, tablemap,lp);
+					processDelete(event, tablemap,lp ,serviceId);
 				}
 			}
 		}
@@ -120,7 +120,7 @@ public class SimpleEventDataParsing {
 	 * @param event
 	 * @param tablemap
 	 */
-	private void processDelete(Event event, TableMap tablemap , LogPosition lp) {
+	private void processDelete(Event event, TableMap tablemap , LogPosition lp,String serviceId) {
 		EventType eventType = EventType.DELETE;
 		EventData eventData = new EventData();
 		eventData.setSchema(tablemap.getDatabase());
@@ -141,6 +141,7 @@ public class SimpleEventDataParsing {
 			syncevent.setEventData(eventData);
 			syncevent.setEventType(eventType);
 			syncevent.setLogPosition(lp);
+			syncevent.setSerivceId(serviceId);
 //			listener.onDelete(syncevent);
 			listener.onData(syncevent);
 			 
@@ -153,7 +154,7 @@ public class SimpleEventDataParsing {
 	 * @param event
 	 * @param tablemap
 	 */
-	private void processInsertEvent(Event event, TableMap tablemap,LogPosition lp) {
+	private void processInsertEvent(Event event, TableMap tablemap,LogPosition lp ,String serviceId) {
 		EventType eventType = EventType.INSERT;
 		EventData eventData = new EventData();
 		eventData.setSchema(tablemap.getDatabase());
@@ -174,6 +175,7 @@ public class SimpleEventDataParsing {
 			syncevent.setEventData(eventData);
 			syncevent.setEventType(eventType);
 			syncevent.setLogPosition(lp);
+			syncevent.setSerivceId(serviceId);
 //			listener.onInsert(syncevent);
 			listener.onData(syncevent);
 		}
@@ -185,7 +187,7 @@ public class SimpleEventDataParsing {
 	 * @param event
 	 * @param tablemap
 	 */
-	private void processUpdateEvent(Event event, TableMap tablemap ,LogPosition lp) {
+	private void processUpdateEvent(Event event, TableMap tablemap ,LogPosition lp,String serviceId) {
 		EventType eventType = EventType.UPDATE;
 		EventData eventData = new EventData();
 		eventData.setSchema(tablemap.getDatabase());
@@ -212,6 +214,7 @@ public class SimpleEventDataParsing {
 			syncevent.setEventData(eventData);
 			syncevent.setEventType(eventType);
 			syncevent.setLogPosition(lp);
+			syncevent.setSerivceId(serviceId);
 //			listener.onUpdate(syncevent);
 			listener.onData(syncevent);
 		}
