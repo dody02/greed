@@ -211,6 +211,21 @@ public class SimpleSyncMysqlConfig {
         this(serviceId,dirver,url,user,password,true,60000,false,position);
     }
 
+    /**
+     *
+     * 构建简单同步服务配置
+     * @param serviceId 任务ID
+     * @param dirver 驱动名称
+     * @param url 数据库JDBC连接URL
+     * @param user 数据库用户
+     * @param password 自动重连间隔
+     * @param getHisPosition 获取历史数据,设置为true将从指定位置（position参数）开始，如果position参数设置为null，则尝试自动获取最早的位置
+     * @param position 指定数据位置
+     */
+    public SimpleSyncMysqlConfig(long serviceId,String dirver,String url, String user,String password,boolean getHisPosition,LogPosition position) {
+        this(serviceId,dirver,url,user,password,true,60000,getHisPosition,position);
+    }
+
 
 
     public void setDrivername(){
